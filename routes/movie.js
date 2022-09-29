@@ -4,6 +4,8 @@ import personModel from '../Model/person.js';
 
 const movieRoute = Router();
 
+///////////////////GET METHOD//////////////
+
 // Nominated At home page
 movieRoute.get('/nominated', async (req, res) => {
   const data = await movieModel
@@ -14,7 +16,7 @@ movieRoute.get('/nominated', async (req, res) => {
 });
 
 // newest updated type=show in home page
-movieRoute.get('/:slug/home', async (req, res) => {
+movieRoute.get('/home/:slug', async (req, res) => {
   const data = await movieModel
     .find(
       { type: req.params.slug },
@@ -23,6 +25,67 @@ movieRoute.get('/:slug/home', async (req, res) => {
     .sort({ updatedAt: -1 })
     .limit(10);
   res.send(data);
+});
+
+//filter
+movieRoute.get('/filter', async (req, res) => {
+  let { genres, duration, country, sort, ...query } = { ...req.query };
+
+  switch (sort) {
+    case 'updated':
+      sort = { updatedAt: -1 };
+      break;
+    case 'publishDate':
+      sort = { createdAt: -1 };
+      break;
+    case 'rating':
+      sort = { IMDB: -1 };
+      break;
+    default:
+      sort = {};
+      break;
+  }
+
+  if (genres) {
+    query['genres.value'] = { $in: [genres] };
+  }
+  if (country) {
+    query['country.value'] = { $in: [country] };
+  }
+  if (duration) {
+    let [start, end] = duration.split('-');
+    if (end === 0) {
+      end = 99999;
+    }
+    query.$and = [{ duration: { $gte: start } }, { duration: { $lte: end } }];
+  }
+
+  const data = await movieModel
+    .find(query, {
+      thumbnail: 1,
+      _id: 1,
+      name: 1,
+      subName: 1,
+      IMDB: 1,
+      year: 1,
+      country: 1,
+      description: 1,
+      genres: 1,
+    })
+    .sort(sort);
+  res.send(data);
+});
+
+//most views page
+movieRoute.get('/top', (req, res) => {
+  const limit = req.query.limit || 30;
+  let day, week, month;
+  day = movieModel.find({}).sort({ 'views.day': -1 }).limit(limit);
+  week = movieModel.find({}).sort({ 'views.week': -1 }).limit(limit);
+  month = movieModel.find({}).sort({ 'views.month': -1 }).limit(limit);
+  Promise.all([day, week, month]).then((data) => {
+    res.send(data);
+  });
 });
 
 //find movie by ID
@@ -52,6 +115,8 @@ movieRoute.get('/:slug', (req, res) => {
       res.status(500).send(err);
     });
 });
+
+///////////////////POST METHOD//////////////
 
 movieRoute.post('/', (req, res) => {
   const movie = req.body;
