@@ -29,8 +29,17 @@ movieRoute.get('/home/:slug', async (req, res) => {
 
 //filter
 movieRoute.get('/filter', async (req, res) => {
-  let { genres, duration, country, sort, ...query } = { ...req.query };
-
+  const limit = 4;
+  let {
+    genres,
+    duration,
+    country,
+    sort,
+    currentPage = 1,
+    ...query
+  } = {
+    ...req.query,
+  };
   switch (sort) {
     case 'updated':
       sort = { updatedAt: -1 };
@@ -42,7 +51,7 @@ movieRoute.get('/filter', async (req, res) => {
       sort = { IMDB: -1 };
       break;
     default:
-      sort = {};
+      sort = { updatedAt: -1 };
       break;
   }
 
@@ -60,20 +69,24 @@ movieRoute.get('/filter', async (req, res) => {
     query.$and = [{ duration: { $gte: start } }, { duration: { $lte: end } }];
   }
 
-  const data = await movieModel
-    .find(query, {
-      thumbnail: 1,
-      _id: 1,
-      name: 1,
-      subName: 1,
-      IMDB: 1,
-      year: 1,
-      country: 1,
-      description: 1,
-      genres: 1,
-    })
-    .sort(sort);
-  res.send(data);
+  const skip = limit * (Number(currentPage) - 1);
+
+  try {
+    const data = movieModel
+      .find(query, { _id: 1, thumbnail: 1, name: 1, subName: 1 })
+      .skip(skip)
+      .limit(limit)
+      .sort(sort);
+    const pageCount = movieModel.find(query).count();
+    Promise.all([data, pageCount]).then(([data, count]) => {
+      res.send({
+        data,
+        pageCount: Math.ceil(count / limit),
+      });
+    });
+  } catch (error) {
+    res.send(error);
+  }
 });
 
 //most views page
@@ -86,6 +99,38 @@ movieRoute.get('/top', (req, res) => {
   Promise.all([day, week, month]).then((data) => {
     res.send(data);
   });
+});
+
+//search page
+movieRoute.get('/search', async (req, res) => {
+  const name = req.query.name,
+    limit = req.query.limit || 30;
+  const data = await movieModel
+    .find(
+      {
+        $or: [
+          {
+            name: { $regex: `.*${name}.*`, $options: 'i' },
+          },
+          {
+            subName: { $regex: `.*${name}.*`, $options: 'i' },
+          },
+        ],
+      },
+      { thumbnail: 1, _id: 1, name: 1, subName: 1 }
+    )
+    .limit(limit);
+  res.send(data);
+});
+
+//find movie by ID at Watch page
+movieRoute.get('/watch', async (req, res) => {
+  const _id = req.query.movieId || '';
+  const data = await movieModel.findOne(
+    { _id: _id },
+    { episodes: 1, name: 1, subName: 1, season: 1, year: 1 }
+  );
+  res.send(data);
 });
 
 //find movie by ID
