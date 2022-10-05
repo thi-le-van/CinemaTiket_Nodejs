@@ -7,15 +7,29 @@ dotenv.config();
 const userRoute = Router();
 import UserModel from '../Model/user.js';
 
-userRoute.get('/profile', authorizationMiddleWare, async (req, res) => {
-  const userDoc = await UserModel.findOne(
+userRoute.post('/collection', authorizationMiddleWare, async (req, res) => {
+  const user = req.body;
+  const isExist = await UserModel.findOne(
     {
-      _id: res.user._id,
-      userName: res.user.userName,
+      _id: user._id,
+      collections: user.movieId,
     },
-    { name: 1, userName: 1, createdAt: 1 }
+    { _id: 1 }
   );
-  res.send(userDoc);
+  if (isExist) {
+    return res.send({
+      type: 'warning',
+      message: 'Phim đã tồn tại trong bộ sưu tập.',
+    });
+  }
+  const data = await UserModel.updateOne(
+    {
+      _id: user._id,
+    },
+    { $addToSet: { collections: user.movieId } }
+  );
+  data &&
+    res.send({ type: 'success', message: 'Thêm vào bộ sưu tập thành công.' });
 });
 
 export default userRoute;

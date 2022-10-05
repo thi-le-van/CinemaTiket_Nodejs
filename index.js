@@ -1,6 +1,7 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import server from './server.js';
 import db from './db.js';
 import {
@@ -14,6 +15,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(
   cors({
     origin: 'http://localhost:3000',

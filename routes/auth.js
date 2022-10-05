@@ -51,7 +51,7 @@ authRoute.get('/signIn', async (req, res) => {
       userData._id = userData._id.toString();
       userData.createdAt = userData.createdAt.toString();
       const accessToken = jwt.sign(userData, process.env.TOKEN_ACCESS_KEY, {
-        expiresIn: '5s',
+        expiresIn: '10s',
       });
 
       const refreshToken = jwt.sign(userData, process.env.TOKEN_REFRESH_KEY);
@@ -63,11 +63,16 @@ authRoute.get('/signIn', async (req, res) => {
         }
       });
 
-      res.send({
-        type: 'success',
-        user: { ...userData, accessToken },
-        refreshToken,
-      });
+      return res
+        .cookie('token', refreshToken, {
+          httpOnly: true,
+          path: '/',
+        })
+        .status(200)
+        .json({
+          type: 'success',
+          user: { ...userData, accessToken },
+        });
     } else {
       res.send({ type: 'wrong' });
     }
@@ -75,7 +80,7 @@ authRoute.get('/signIn', async (req, res) => {
 });
 
 authRoute.get('/logout', authorizationMiddleWare, async (req, res) => {
-  const refreshToken = req.headers?.cookie?.split(' ')[1];
+  const refreshToken = req.cookies.token;
 
   const result = await TokenModel.deleteOne({ token: refreshToken });
 
@@ -86,30 +91,38 @@ authRoute.get('/logout', authorizationMiddleWare, async (req, res) => {
   }
 });
 
-authRoute.post('/refresh-token', async (req, res) => {
-  const refreshToken = req.headers?.cookie?.split(' ')[1];
-  const user = req.body;
-  jwt.verify(refreshToken, process.env.TOKEN_REFRESH_KEY, async (err, data) => {
-    if (err) res.status(403).json('RefreshToken is not valid!');
-    try {
-      await TokenModel.deleteOne({ token: refreshToken });
-      const newAccessToken = jwt.sign(user, process.env.TOKEN_ACCESS_KEY, {
-        expiresIn: '5s',
-      });
-      console.log(newAccessToken);
-      const newRefreshToken = jwt.sign(user, process.env.TOKEN_REFRESH_KEY);
-      await TokenModel.create({ token: newRefreshToken }, (err) => {
-        if (err) console.log('Save token failed');
-        else {
-          console.log('save token to DB!');
-          res.send({
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
-          });
-        }
-      });
-    } catch (error) {}
-  });
+authRoute.get('/refresh-token', async (req, res) => {
+  const refreshToken = req.cookies.token;
+  try {
+    jwt.verify(
+      refreshToken,
+      process.env.TOKEN_REFRESH_KEY,
+      async (err, data) => {
+        data = { ...data, iat: Math.floor(Date.now() / 1000) };
+        if (err) res.status(403).json('RefreshToken is not valid!');
+        await TokenModel.deleteOne({ token: refreshToken });
+        const newAccessToken = jwt.sign(data, process.env.TOKEN_ACCESS_KEY, {
+          expiresIn: '30s',
+        });
+        const newRefreshToken = jwt.sign(data, process.env.TOKEN_REFRESH_KEY);
+        await TokenModel.create({ token: newRefreshToken }, (err) => {
+          if (err) console.log('Save token failed');
+          else {
+            console.log('save token to DB!');
+            res
+              .cookie('token', refreshToken, {
+                httpOnly: true,
+                path: '/',
+              })
+              .send({
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+              });
+          }
+        });
+      }
+    );
+  } catch (error) {}
 });
 
 export default authRoute;
