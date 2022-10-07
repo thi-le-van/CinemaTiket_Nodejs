@@ -79,7 +79,7 @@ authRoute.get('/signIn', async (req, res) => {
   });
 });
 
-authRoute.get('/logout', authorizationMiddleWare, async (req, res) => {
+authRoute.get('/logout', async (req, res) => {
   const refreshToken = req.cookies.token;
 
   const result = await TokenModel.deleteOne({ token: refreshToken });
