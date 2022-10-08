@@ -2,8 +2,8 @@ import express from 'express';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import server from './server.js';
 import db from './db.js';
+import server from './server.js';
 import {
   movieRoute,
   personRoute,

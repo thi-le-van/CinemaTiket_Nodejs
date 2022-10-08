@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import movieModel from '../Model/movie.js';
 import personModel from '../Model/person.js';
+import commentsModel from '../Model/comments.js';
+import authorizationMiddleWare from '../Middleware/authorization.js';
 
 const movieRoute = Router();
 
@@ -133,6 +135,49 @@ movieRoute.get('/watch', async (req, res) => {
   res.send(data);
 });
 
+//comments of movie(id)
+movieRoute.get('/comments', authorizationMiddleWare, async (req, res) => {
+  const movieId = req.query.movieId;
+  const limit = +req.query.limit || 5;
+  const skip = +req.query.skip || 0;
+  try {
+    const data = await commentsModel.aggregate([
+      {
+        $facet: {
+          data: [
+            {
+              $match: { movieId: movieId },
+            },
+            {
+              $project: {
+                _id: 1,
+                username: 1,
+                userId: 1,
+                movieId,
+                createdAt: 1,
+                message: 1,
+              },
+            },
+            {
+              $sort: { createdAt: -1 },
+            },
+            {
+              $skip: skip,
+            },
+            {
+              $limit: limit,
+            },
+          ],
+          totalCount: [{ $count: 'count' }],
+        },
+      },
+    ]);
+    res.send(data[0]);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //find movie by ID
 movieRoute.get('/:slug', (req, res) => {
   let data = {};
@@ -172,6 +217,24 @@ movieRoute.post('/', (req, res) => {
       res.send('Upload movie successfully!');
     }
   });
+});
+
+///////////////////DELETE METHOD//////////////
+movieRoute.delete('/comment', authorizationMiddleWare, (req, res) => {
+  const _id = req.query._id;
+  const userId = res.user._id;
+  commentsModel
+    .deleteOne({
+      _id: _id,
+      userId: userId,
+    })
+    .then((data) => {
+      if (data.deletedCount) {
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(404);
+      }
+    });
 });
 
 export default movieRoute;

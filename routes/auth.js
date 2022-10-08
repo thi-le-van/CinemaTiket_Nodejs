@@ -99,15 +99,17 @@ authRoute.get('/refresh-token', async (req, res) => {
       process.env.TOKEN_REFRESH_KEY,
       async (err, data) => {
         data = { ...data, iat: Math.floor(Date.now() / 1000) };
-        if (err) res.status(403).json('RefreshToken is not valid!');
+        if (err) return res.status(403).json('RefreshToken is not valid!');
         await TokenModel.deleteOne({ token: refreshToken });
         const newAccessToken = jwt.sign(data, process.env.TOKEN_ACCESS_KEY, {
           expiresIn: '30s',
         });
         const newRefreshToken = jwt.sign(data, process.env.TOKEN_REFRESH_KEY);
         await TokenModel.create({ token: newRefreshToken }, (err) => {
-          if (err) console.log('Save token failed');
-          else {
+          if (err) {
+            console.log('Save token failed');
+            res.status(500).json('Fail when save token to db');
+          } else {
             console.log('save token to DB!');
             res
               .cookie('token', refreshToken, {
