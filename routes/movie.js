@@ -168,11 +168,15 @@ movieRoute.get('/comments', authorizationMiddleWare, async (req, res) => {
               $limit: limit,
             },
           ],
-          totalCount: [{ $count: 'count' }],
         },
       },
     ]);
-    res.send(data[0]);
+    const totalCount = await commentsModel
+      .find({
+        movieId: movieId,
+      })
+      .count();
+    res.send({ ...data[0], totalCount });
   } catch (error) {
     console.log(error);
   }
