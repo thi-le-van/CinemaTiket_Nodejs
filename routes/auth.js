@@ -51,7 +51,7 @@ authRoute.get('/signIn', async (req, res) => {
       userData._id = userData._id.toString();
       userData.createdAt = userData.createdAt.toString();
       const accessToken = jwt.sign(userData, process.env.TOKEN_ACCESS_KEY, {
-        expiresIn: '10s',
+        expiresIn: '5',
       });
 
       const refreshToken = jwt.sign(userData, process.env.TOKEN_REFRESH_KEY);
@@ -64,7 +64,7 @@ authRoute.get('/signIn', async (req, res) => {
       });
 
       return res
-        .cookie('token', refreshToken, {
+        .cookie('refreshToken', 'Bearer ' + refreshToken, {
           httpOnly: true,
           path: '/',
         })
@@ -80,7 +80,7 @@ authRoute.get('/signIn', async (req, res) => {
 });
 
 authRoute.get('/logout', async (req, res) => {
-  const refreshToken = req.cookies.token;
+  const refreshToken = req.cookies.refreshToken.split(' ')[1];
 
   const result = await TokenModel.deleteOne({ token: refreshToken });
 
@@ -92,7 +92,7 @@ authRoute.get('/logout', async (req, res) => {
 });
 
 authRoute.get('/refresh-token', async (req, res) => {
-  const refreshToken = req.cookies.token;
+  const refreshToken = req.cookies.refreshToken.split(' ')[1];
   try {
     jwt.verify(
       refreshToken,
@@ -100,9 +100,14 @@ authRoute.get('/refresh-token', async (req, res) => {
       async (err, data) => {
         data = { ...data, iat: Math.floor(Date.now() / 1000) };
         if (err) return res.status(403).json('RefreshToken is not valid!');
-        await TokenModel.deleteOne({ token: refreshToken });
+        const deleted = await TokenModel.deleteOne({ token: refreshToken });
+        if (deleted.deletedCount == 0) {
+          return res
+            .status(401)
+            .json({ type: 'expired', message: 'Token expired' });
+        }
         const newAccessToken = jwt.sign(data, process.env.TOKEN_ACCESS_KEY, {
-          expiresIn: '30s',
+          expiresIn: '5s',
         });
         const newRefreshToken = jwt.sign(data, process.env.TOKEN_REFRESH_KEY);
         await TokenModel.create({ token: newRefreshToken }, (err) => {
@@ -112,13 +117,13 @@ authRoute.get('/refresh-token', async (req, res) => {
           } else {
             console.log('save token to DB!');
             res
-              .cookie('token', refreshToken, {
+              .cookie('refreshToken', 'Bearer ' + newRefreshToken, {
                 httpOnly: true,
                 path: '/',
               })
-              .send({
+              .status(200)
+              .json({
                 accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
               });
           }
         });
