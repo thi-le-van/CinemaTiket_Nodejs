@@ -223,6 +223,19 @@ movieRoute.post('/', (req, res) => {
   });
 });
 
+movieRoute.post('/comment', authorizationMiddleWare, (req, res) => {
+  const comment = req.body;
+  commentsModel.create(comment, (err, comment) => {
+    if (err) res.status(500).json('Server error when saving comment to DB.');
+    else
+      res.send({
+        type: 'success',
+        message: 'Add comment successfully.',
+        comment,
+      });
+  });
+});
+
 ///////////////////DELETE METHOD//////////////
 movieRoute.delete('/comment', authorizationMiddleWare, (req, res) => {
   const _id = req.query._id;

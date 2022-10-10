@@ -1,47 +1,41 @@
-import { WebSocketServer } from 'ws';
+// import { WebSocketServer } from 'ws';
+import { Server } from 'socket.io';
+import http from 'http';
 import commentsModel from './Model/comments.js';
 
-const wss = new WebSocketServer({
-  port: 9000,
-});
-
-wss.on('connection', function connection(client) {
-  client.on('message', async function message(data, isBinary) {
-    let message = isBinary ? data : data.toString();
-    const payload = JSON.parse(message);
-
-    //add comment
-    if (payload.type === 'addComment') {
-      message = JSON.parse(message);
-      try {
-        const uploaded = await commentsModel.create(payload);
-        [...wss.clients].forEach((c) => {
-          c.send(
-            JSON.stringify({
-              ...message,
-              _id: uploaded._id,
-              createdAt: uploaded.createdAt,
-            })
-          );
-        });
-      } catch (error) {}
-    }
-    //delete comment
-    else if (payload.type === 'deleteComment') {
-      [...wss.clients].forEach((c) => {
-        c.send(
-          JSON.stringify({
-            type: payload.type,
-            _id: payload._id,
-          })
-        );
-      });
-    }
-  });
-});
-
 const server = (app) => {
-  app.listen(process.env.PORT || 3000, (err) => {
+  //io
+  const servers = http.createServer(app);
+  const io = new Server(servers, { cors: { origin: '*' } });
+
+  io.on('connection', (socket) => {
+    socket.on('subscribe', function (room) {
+      console.log('joining room: ', room);
+      socket.join(room);
+    });
+    socket.on('unsubscribe', function (room) {
+      console.log('leaving room: ', room);
+      socket.leave(room);
+    });
+    socket.on('sendDataClient', function (data) {
+      const { type } = data.data;
+      switch (type) {
+        case 'addComment':
+          io.in(data.room).emit('sendDataServer', {
+            ...data.data,
+          });
+          break;
+        case 'deleteComment':
+          io.in(data.room).emit('sendDataServer', data.data);
+          break;
+        default:
+          break;
+      }
+    });
+  });
+
+  //node server
+  servers.listen(process.env.PORT || 3000, (err) => {
     if (err) throw new Error(err);
     console.log(`Server is running on port ${process.env.PORT}`);
   });
