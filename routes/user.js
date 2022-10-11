@@ -106,12 +106,10 @@ userRoute.patch(
               { password: hash }
             ).then((data) => {
               if (data?.modifiedCount) {
-                res
-                  .status(200)
-                  .json({
-                    type: 'success',
-                    message: 'Change password successfully.',
-                  });
+                res.status(200).json({
+                  type: 'success',
+                  message: 'Change password successfully.',
+                });
               }
             });
           });
@@ -120,5 +118,28 @@ userRoute.patch(
     });
   }
 );
+
+//============DE:ETE==============//
+userRoute.delete('/collection', authorizationMiddleWare, (req, res) => {
+  const movieId = req.query.movieId;
+  const userId = res.user._id;
+  UserModel.updateOne(
+    { _id: userId },
+    {
+      $pull: { collections: movieId },
+    }
+  )
+    .then((result) => {
+      if (result.modifiedCount) {
+        res.send({
+          type: 'warning',
+          message: 'Xóa phim khỏi bộ sưu tập thành công.',
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ type: 'error', message: 'something wrong' });
+    });
+});
 
 export default userRoute;

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import movieModel from '../Model/movie.js';
 import personModel from '../Model/person.js';
 import commentsModel from '../Model/comments.js';
+import userModel from '../Model/user.js';
 import authorizationMiddleWare from '../Middleware/authorization.js';
 
 const movieRoute = Router();
@@ -184,9 +185,11 @@ movieRoute.get('/comments', authorizationMiddleWare, async (req, res) => {
 
 //find movie by ID
 movieRoute.get('/:slug', (req, res) => {
+  const movieId = req.params.slug;
+  const userId = req.query?.userId;
   let data = {};
   movieModel
-    .findOne({ _id: req.params.slug })
+    .findOne({ _id: movieId })
     .then((movie) => {
       data = { ...movie };
       return personModel.find(
@@ -201,9 +204,15 @@ movieRoute.get('/:slug', (req, res) => {
         { name: 1 }
       );
     })
-    .then((foundation) => {
+    .then(async (foundation) => {
       data._doc.foundation = foundation;
-      res.send(data._doc);
+      const match = await userModel
+        .findOne({
+          _id: userId,
+          collections: movieId,
+        })
+        .count();
+      res.send({ ...data._doc, isCollected: !!match });
     })
     .catch((err) => {
       res.status(500).send(err);
