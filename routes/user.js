@@ -1,37 +1,15 @@
 import { Router } from 'express';
-import authorizationMiddleWare from '../Middleware/authorization.js';
+import bcrypt from 'bcrypt';
 
 import dotenv from 'dotenv';
 dotenv.config();
-
-const userRoute = Router();
+import authorizationMiddleWare from '../Middleware/authorization.js';
 import UserModel from '../Model/user.js';
 import MovieModel from '../Model/movie.js';
 
-userRoute.post('/collection', authorizationMiddleWare, async (req, res) => {
-  const user = req.body;
-  const isExist = await UserModel.findOne(
-    {
-      _id: user._id,
-      collections: user.movieId,
-    },
-    { _id: 1 }
-  );
-  if (isExist) {
-    return res.send({
-      type: 'warning',
-      message: 'Phim đã tồn tại trong bộ sưu tập.',
-    });
-  }
-  const data = await UserModel.updateOne(
-    {
-      _id: user._id,
-    },
-    { $addToSet: { collections: user.movieId } }
-  );
-  data &&
-    res.send({ type: 'success', message: 'Thêm vào bộ sưu tập thành công.' });
-});
+const userRoute = Router();
+
+//============GET==============//
 
 userRoute.get('/collection', authorizationMiddleWare, async (req, res) => {
   const _id = req.query.userId;
@@ -76,5 +54,71 @@ userRoute.get('/collection', authorizationMiddleWare, async (req, res) => {
       .json('Internal server error.', 'Some thing wrong when find collections');
   }
 });
+
+//============POST==============//
+
+userRoute.post('/collection', authorizationMiddleWare, async (req, res) => {
+  const user = req.body;
+  const isExist = await UserModel.findOne(
+    {
+      _id: user._id,
+      collections: user.movieId,
+    },
+    { _id: 1 }
+  );
+  if (isExist) {
+    return res.send({
+      type: 'warning',
+      message: 'Phim đã tồn tại trong bộ sưu tập.',
+    });
+  }
+  const data = await UserModel.updateOne(
+    {
+      _id: user._id,
+    },
+    { $addToSet: { collections: user.movieId } }
+  );
+  data &&
+    res.send({ type: 'success', message: 'Thêm vào bộ sưu tập thành công.' });
+});
+
+//============PATCH==============//
+
+userRoute.patch(
+  '/change-password',
+  authorizationMiddleWare,
+  async (req, res) => {
+    const { password, newPassword } = req.body;
+    const hash = await UserModel.findOne(
+      { userName: res.user.userName },
+      { password: 1, _id: 0 }
+    );
+    bcrypt.compare(password, hash?.password, (err, result) => {
+      if (!result) {
+        return res
+          .status(402)
+          .json({ type: 'error', message: 'Wrong password' });
+      } else {
+        bcrypt.genSalt(10, function (err, salt) {
+          bcrypt.hash(newPassword, salt, function (err, hash) {
+            UserModel.updateOne(
+              { userName: res.user.userName },
+              { password: hash }
+            ).then((data) => {
+              if (data?.modifiedCount) {
+                res
+                  .status(200)
+                  .json({
+                    type: 'success',
+                    message: 'Change password successfully.',
+                  });
+              }
+            });
+          });
+        });
+      }
+    });
+  }
+);
 
 export default userRoute;

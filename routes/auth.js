@@ -51,7 +51,7 @@ authRoute.get('/signIn', async (req, res) => {
       userData._id = userData._id.toString();
       userData.createdAt = userData.createdAt.toString();
       const accessToken = jwt.sign(userData, process.env.TOKEN_ACCESS_KEY, {
-        expiresIn: '5',
+        expiresIn: '30s',
       });
 
       const refreshToken = jwt.sign(userData, process.env.TOKEN_REFRESH_KEY);
@@ -74,7 +74,7 @@ authRoute.get('/signIn', async (req, res) => {
           user: { ...userData, accessToken },
         });
     } else {
-      res.send({ type: 'wrong' });
+      res.status(402).json({ type: 'error', message: 'Wrong password.' });
     }
   });
 });
@@ -107,7 +107,7 @@ authRoute.get('/refresh-token', async (req, res) => {
             .json({ type: 'expired', message: 'Token expired' });
         }
         const newAccessToken = jwt.sign(data, process.env.TOKEN_ACCESS_KEY, {
-          expiresIn: '5s',
+          expiresIn: '30s',
         });
         const newRefreshToken = jwt.sign(data, process.env.TOKEN_REFRESH_KEY);
         await TokenModel.create({ token: newRefreshToken }, (err) => {
