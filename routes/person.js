@@ -21,10 +21,16 @@ personRoute.get('/:slug', async (req, res) => {
   const data = await PersonModel.findOne({
     _id: req.params.slug,
   });
+  const newMovieParticipated = data.movieParticipated.map((movieId) => {
+    if (movieId.replaceAll(' ', '').length !== 24) {
+      return '111111111111111111111111';
+    }
+    return movieId;
+  });
   try {
     const moviesParticipated = await MovieModel.find(
       {
-        _id: { $in: data.movieParticipated },
+        _id: { $in: newMovieParticipated },
       },
       { _id: 1, name: 1, subName: 1, thumbnail: 1 }
     );
