@@ -19,6 +19,7 @@ const Movie = mongoose.Schema(
     actors: Array,
     trailers: Array,
     episodes: Array,
+    views: Object,
   },
   { timestamps: true }
 );

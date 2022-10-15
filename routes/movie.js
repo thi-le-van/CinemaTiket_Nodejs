@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import moment from 'moment';
 import movieModel from '../Model/movie.js';
 import personModel from '../Model/person.js';
 import commentsModel from '../Model/comments.js';
@@ -6,6 +7,12 @@ import userModel from '../Model/user.js';
 import authorizationMiddleWare from '../Middleware/authorization.js';
 
 const movieRoute = Router();
+
+moment.updateLocale('en', {
+  week: {
+    dow: 1,
+  },
+});
 
 ///////////////////GET METHOD//////////////
 
@@ -184,11 +191,11 @@ movieRoute.get('/comments', authorizationMiddleWare, async (req, res) => {
 });
 
 //find movie by ID
-movieRoute.get('/:slug', (req, res) => {
+movieRoute.get('/:slug', async (req, res) => {
   const movieId = req.params.slug;
   const userId = req.query?.userId;
   let data = {};
-  movieModel
+  await movieModel
     .findOne({ _id: movieId })
     .then((movie) => {
       data = { ...movie };
@@ -212,11 +219,61 @@ movieRoute.get('/:slug', (req, res) => {
           collections: movieId,
         })
         .count();
-      res.send({ ...data._doc, isCollected: !!match });
+      data = { ...data._doc, isCollected: !!match };
     })
     .catch((err) => {
       res.status(500).send(err);
     });
+
+  const views = data.views || {};
+  const now = new Date();
+  const lastAccess = views.lastAccess;
+  let newViewsField = { ...views };
+  newViewsField.lastAccess = now;
+  if (!lastAccess) {
+    newViewsField = {
+      ...newViewsField,
+      day: 1,
+      week: 1,
+      month: 1,
+    };
+  } else {
+    let day, month, year;
+    day = lastAccess.getDate();
+    month = lastAccess.getMonth();
+    year = lastAccess.getFullYear();
+    //new day
+    if (
+      day != now.getDate() ||
+      month !== now.getMonth() ||
+      year !== now.getFullYear()
+    ) {
+      newViewsField.day = 1;
+    } else {
+      newViewsField.day++;
+    }
+    //new month
+    if (month !== now.getMonth() || year !== now.getFullYear()) {
+      newViewsField.month = 1;
+    } else {
+      newViewsField.month++;
+    }
+    //new week
+    if (!moment(now).isSame(lastAccess, 'week')) {
+      newViewsField.week = 1;
+    } else {
+      newViewsField.week++;
+    }
+  }
+  await movieModel.updateOne(
+    {
+      _id: movieId,
+    },
+    {
+      views: newViewsField,
+    }
+  );
+  res.send(data);
 });
 
 ///////////////////POST METHOD//////////////
