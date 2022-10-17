@@ -1,8 +1,10 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import PersonModel from '../Model/person.js';
 import MovieModel from '../Model/movie.js';
 
 const personRoute = Router();
+const ObjectId = mongoose.Types.ObjectId;
 
 personRoute.post('/', (req, res) => {
   const person = req.body;
@@ -21,11 +23,11 @@ personRoute.get('/:slug', async (req, res) => {
   const data = await PersonModel.findOne({
     _id: req.params.slug,
   });
-  const newMovieParticipated = data.movieParticipated.map((movieId) => {
-    if (movieId.replaceAll(' ', '').length !== 24) {
-      return '111111111111111111111111';
+  const newMovieParticipated = data.movieParticipated.filter((movieId) => {
+    if (ObjectId.isValid(movieId)) {
+      return true;
     }
-    return movieId;
+    return false;
   });
   try {
     const moviesParticipated = await MovieModel.find(
