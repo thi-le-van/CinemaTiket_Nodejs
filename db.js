@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
-mongoose.connect('mongodb://localhost:27017/movie', {
+const localDB = 'mongodb://localhost:27017/movie';
+
+mongoose.connect(process.env.MONGODB_CONNECT, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
