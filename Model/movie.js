@@ -24,5 +24,5 @@ const Movie = mongoose.Schema(
   { timestamps: true }
 );
 
-const movieModel = mongoose.model('movie', Movie);
+const movieModel = mongoose.model('movies', Movie);
 export default movieModel;
