@@ -22,6 +22,7 @@ movieRoute.get('/nominated', async (req, res) => {
     .find({}, { _id: 1, name: 1, subName: 1, thumbnail: 1 })
     .sort({ updatedAt: -1 })
     .limit(5);
+  console.log(data);
   res.send(data);
 });
 
