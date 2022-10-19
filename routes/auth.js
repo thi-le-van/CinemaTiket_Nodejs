@@ -92,8 +92,8 @@ authRoute.get('/logout', async (req, res) => {
 });
 
 authRoute.get('/refresh-token', async (req, res) => {
-  const refreshToken = req.cookies.refreshToken.split(' ')[1];
   try {
+    const refreshToken = req.cookies.refreshToken.split(' ')[1];
     jwt.verify(
       refreshToken,
       process.env.TOKEN_REFRESH_KEY,
