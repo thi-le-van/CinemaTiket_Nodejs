@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: 'https://xemphim-clone-eddgyez1r-levanthi.vercel.app',
-    // origin: '*',
+    // origin: 'http://localhost:3000',
     credentials: true,
   })
 );

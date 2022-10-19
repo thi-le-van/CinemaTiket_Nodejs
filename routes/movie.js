@@ -83,7 +83,18 @@ movieRoute.get('/filter', async (req, res) => {
 
   try {
     const data = movieModel
-      .find(query, { _id: 1, thumbnail: 1, name: 1, subName: 1 })
+      .find(query, {
+        _id: 1,
+        thumbnail: 1,
+        name: 1,
+        subName: 1,
+        year: 1,
+        description: 1,
+        duration: 1,
+        country: 1,
+        IMDB: 1,
+        genres: 1,
+      })
       .skip(skip)
       .limit(limit)
       .sort(sort);
