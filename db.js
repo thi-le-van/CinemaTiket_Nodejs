@@ -7,9 +7,13 @@ mongoose.connect('mongodb://localhost:27017/movie', {
 
 const db = mongoose.connection;
 
-db.on('error', console.error.bind(console, 'MongoDB connection error!'));
-db.once('open', function () {
-  console.log('MongoDB Connected successfully!');
-});
+try {
+  db.on('error', console.error.bind(console, 'MongoDB connection error!'));
+  db.once('open', function () {
+    console.log('MongoDB Connected successfully!');
+  });
+} catch (error) {
+  console.log(error);
+}
 
 export default db;
