@@ -39,49 +39,49 @@ movieRoute.get('/home/:slug', async (req, res) => {
 
 //filter
 movieRoute.get('/filter', async (req, res) => {
-  const limit = 4;
-  let {
-    genres,
-    duration,
-    country,
-    sort,
-    currentPage = 1,
-    ...query
-  } = {
-    ...req.query,
-  };
-  switch (sort) {
-    case 'updated':
-      sort = { updatedAt: -1 };
-      break;
-    case 'publishDate':
-      sort = { createdAt: -1 };
-      break;
-    case 'rating':
-      sort = { IMDB: -1 };
-      break;
-    default:
-      sort = { updatedAt: -1 };
-      break;
-  }
-
-  if (genres) {
-    query['genres.value'] = { $in: [genres] };
-  }
-  if (country) {
-    query['country.value'] = { $in: [country] };
-  }
-  if (duration) {
-    let [start, end] = duration.split('-');
-    if (end === 0) {
-      end = 99999;
-    }
-    query.$and = [{ duration: { $gte: start } }, { duration: { $lte: end } }];
-  }
-
-  const skip = limit * (Number(currentPage) - 1);
-
   try {
+    const limit = req.params.limit || 15;
+    let {
+      genres,
+      duration,
+      country,
+      sort,
+      currentPage = 1,
+      ...query
+    } = {
+      ...req.query,
+    };
+    switch (sort) {
+      case 'updated':
+        sort = { updatedAt: -1 };
+        break;
+      case 'publishDate':
+        sort = { createdAt: -1 };
+        break;
+      case 'rating':
+        sort = { IMDB: -1 };
+        break;
+      default:
+        sort = { updatedAt: -1 };
+        break;
+    }
+
+    if (genres) {
+      query['genres.value'] = { $in: [genres] };
+    }
+    if (country) {
+      query['country.value'] = { $in: [country] };
+    }
+    if (duration) {
+      let [start, end] = duration.split('-');
+      if (end === 0) {
+        end = 99999;
+      }
+      query.$and = [{ duration: { $gte: start } }, { duration: { $lte: end } }];
+    }
+
+    const skip = limit * (Number(currentPage) - 1);
+
     const data = movieModel
       .find(query, {
         _id: 1,
