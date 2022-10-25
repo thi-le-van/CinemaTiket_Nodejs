@@ -133,7 +133,10 @@ authRoute.get('/refresh-token', async (req, res) => {
         });
       }
     );
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    console.log('something wrong');
+  }
 });
 
 export default authRoute;
