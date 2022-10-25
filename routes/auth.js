@@ -62,7 +62,7 @@ authRoute.get('/signIn', async (req, res) => {
           console.log('save token to DB!');
         }
       });
-
+      console.log(refreshToken);
       return res
         .cookie('refreshToken', 'Bearer ' + refreshToken, {
           httpOnly: true,
