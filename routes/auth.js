@@ -80,14 +80,18 @@ authRoute.get('/signIn', async (req, res) => {
 });
 
 authRoute.get('/logout', async (req, res) => {
-  const refreshToken = req.cookies.refreshToken.split(' ')[1];
+  try {
+    const refreshToken = req.cookies.refreshToken.split(' ')[1];
 
-  const result = await TokenModel.deleteOne({ token: refreshToken });
+    const result = await TokenModel.deleteOne({ token: refreshToken });
 
-  if (result.acknowledged) {
-    res.sendStatus(200);
-  } else {
-    res.status(401).json('Error when delete token');
+    if (result.acknowledged) {
+      res.sendStatus(200);
+    } else {
+      res.status(401).json('Error when delete token');
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
