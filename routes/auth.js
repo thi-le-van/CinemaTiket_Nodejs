@@ -64,14 +64,15 @@ authRoute.get('/signIn', async (req, res) => {
       });
       console.log(refreshToken);
       res
-        .cookie('refreshToken', 'Bearer ' + refreshToken, {
-          httpOnly: true,
-          path: '/',
-        })
+        // .cookie('refreshToken', 'Bearer ' + refreshToken, {
+        //   httpOnly: true,
+        //   path: '/',
+        // })
         .status(200)
         .json({
           type: 'success',
           user: { ...userData, accessToken },
+          refreshToken,
         });
     } else {
       res.status(402).json({ type: 'error', message: 'Wrong password.' });
@@ -121,13 +122,14 @@ authRoute.get('/refresh-token', async (req, res) => {
           } else {
             console.log('save token to DB!');
             res
-              .cookie('refreshToken', 'Bearer ' + newRefreshToken, {
-                httpOnly: true,
-                path: '/',
-              })
+              // .cookie('refreshToken', 'Bearer ' + newRefreshToken, {
+              //   httpOnly: true,
+              //   path: '/',
+              // })
               .status(200)
               .json({
                 accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
               });
           }
         });
