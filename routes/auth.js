@@ -81,8 +81,11 @@ authRoute.get('/signIn', async (req, res) => {
 });
 
 authRoute.get('/logout', async (req, res) => {
+  let refreshToken;
+  if (req.cookies.refreshToken) {
+    refreshToken = req.cookies.refreshToken.split(' ')[1];
+  }
   try {
-    let refreshToken = req.cookies.refreshToken.split(' ')[1];
     if (!refreshToken) {
       refreshToken = req.query.refreshToken;
     }
@@ -100,8 +103,11 @@ authRoute.get('/logout', async (req, res) => {
 });
 
 authRoute.get('/refresh-token', async (req, res) => {
+  let refreshToken;
+  if (req.cookies.refreshToken) {
+    refreshToken = req.cookies.refreshToken.split(' ')[1];
+  }
   try {
-    let refreshToken = req.cookies.refreshToken.split(' ')[1];
     if (!refreshToken) {
       refreshToken = req.query.refreshToken;
     }
