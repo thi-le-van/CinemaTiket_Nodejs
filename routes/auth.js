@@ -63,7 +63,7 @@ authRoute.get('/signIn', async (req, res) => {
         }
       });
       console.log(refreshToken);
-      return res
+      res
         .cookie('refreshToken', 'Bearer ' + refreshToken, {
           httpOnly: true,
           path: '/',

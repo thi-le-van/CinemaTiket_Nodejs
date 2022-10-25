@@ -18,9 +18,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    // origin: 'https://xemphim-clone.vercel.app',
+    origin: ['https://xemphim-clone.vercel.app', 'http://localhost:3000'],
     // origin: 'http://localhost:3000',
-    origin: '*',
     credentials: true,
   })
 );
