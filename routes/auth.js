@@ -11,59 +11,55 @@ import authorizationMiddleWare from '../Middleware/authorization.js';
 const authRoute = Router();
 const saltRounds = 10;
 
-authRoute.post('/signUp', async (req, res) => {
-  const { password, ...user } = req.body;
+authRoute.post('/register', async (req, res) => {
+  const { ...user } = req.body;
 
   const isExists = await UserModel.findOne(
-    { userName: user?.userName },
-    { _id: 0, userName: 1 }
+    { email: user?.email },
+    { _id: 0, email: 1 }
   );
 
   if (!isExists) {
-    bcrypt.hash(password, saltRounds, function (err, hash) {
+    bcrypt.hash(user.password, saltRounds, function (err, hash) {
       // Store hash in your password DB.
       UserModel.create({ ...user, password: hash }, (err) => {
         if (err) res.sendStatus(500);
         console.log('Created new user!');
-        res.send({ type: 'success' });
+        return res.send({ type: 'success' });
       });
     });
   } else {
-    res.send({ type: 'exist' });
+    return res.status(400).send("user exist")
   }
 });
 
-authRoute.get('/signIn', async (req, res) => {
-  const user = req.query;
-  const hash = await UserModel.findOne(
-    { userName: user.userName },
-    { password: 1, _id: 0 }
-  );
-  bcrypt.compare(user.password, hash.password, async function (err, result) {
+authRoute.post('/login', async (req, res) => {
+  try {
+    const {...user} = req.body
+    const userMatch = await UserModel.findOne(
+      { email: user.email },
+    );
+  bcrypt.compare(user.password, userMatch?.password || '', async function (err, result) {
     if (result) {
-      let data = await UserModel.findOne(
-        {
-          userName: user.userName,
-        },
-        { userName: 1, name: 1, createdAt: 1 }
-      );
-      const userData = data._doc;
-      userData._id = userData._id.toString();
-      userData.createdAt = userData.createdAt.toString();
-      const accessToken = jwt.sign(userData, process.env.TOKEN_ACCESS_KEY, {
-        expiresIn: '2s',
+      const accessToken = jwt.sign({email:userMatch.email,_id:userMatch._id}, process.env.TOKEN_ACCESS_KEY, {
+        expiresIn: '1h',
       });
 
-      const refreshToken = jwt.sign(userData, process.env.TOKEN_REFRESH_KEY);
-
+      const refreshToken = jwt.sign({email:userMatch.email,_id:userMatch._id}, process.env.TOKEN_REFRESH_KEY);
+      console.log('hello')
       await TokenModel.create({ token: refreshToken }, (err) => {
         if (err) console.log('Save token field');
         else {
           console.log('save token to DB!');
         }
       });
-      console.log(refreshToken);
-      res
+      const newData = {...userMatch._doc}
+      delete newData.password
+      delete newData.createdAt
+      delete newData.updatedAt
+      delete newData._id
+      console.log('success')
+      return res
         // .cookie('refreshToken', 'Bearer ' + refreshToken, {
         //   httpOnly: true,
         //   path: '/',
@@ -71,31 +67,29 @@ authRoute.get('/signIn', async (req, res) => {
         .status(200)
         .json({
           type: 'success',
-          user: { ...userData, accessToken },
-          refreshToken,
+          user: {...newData,accessToken},
+          refreshToken
         });
     } else {
-      res.status(402).json({ type: 'error', message: 'Wrong password.' });
+      console.log('fail')
+      return res.status(400).send({ type: 'error', message: 'Emai or password incorrect.' });
     }
   });
+  } catch (error) {
+    console.log(error)
+  }
 });
 
-authRoute.get('/logout', async (req, res) => {
-  let refreshToken;
-  if (req.cookies.refreshToken) {
-    refreshToken = req.cookies.refreshToken.split(' ')[1];
-  }
+authRoute.post('/logout', async (req, res) => {
   try {
-    if (!refreshToken) {
-      refreshToken = req.query.refreshToken;
-    }
-
-    const result = await TokenModel.deleteOne({ token: refreshToken });
+    let {token} = req.cookies
+    token = token.split(' ')[1]
+    const result = await TokenModel.deleteOne({ token });
 
     if (result.acknowledged) {
-      res.sendStatus(200);
+      res.send('success');
     } else {
-      res.status(401).json('Error when delete token');
+      res.status(500).json('Error when delete token');
     }
   } catch (error) {
     console.log(error);
@@ -109,7 +103,7 @@ authRoute.get('/refresh-token', async (req, res) => {
   }
   try {
     if (!refreshToken) {
-      refreshToken = req.query.refreshToken;
+      refreshToken = req.query.refreshToken.split(' ')[1];
     }
     jwt.verify(
       refreshToken,
@@ -124,7 +118,7 @@ authRoute.get('/refresh-token', async (req, res) => {
             .json({ type: 'expired', message: 'Token expired' });
         }
         const newAccessToken = jwt.sign(data, process.env.TOKEN_ACCESS_KEY, {
-          expiresIn: '2s',
+          expiresIn: '30s',
         });
         const newRefreshToken = jwt.sign(data, process.env.TOKEN_REFRESH_KEY);
         await TokenModel.create({ token: newRefreshToken }, (err) => {

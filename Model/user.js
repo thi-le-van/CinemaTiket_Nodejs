@@ -3,9 +3,11 @@ import mongoose from 'mongoose';
 const user = mongoose.Schema(
   {
     name: String,
-    userName: String,
+    email:String,
     password: String,
-    collections: Array,
+    phone:String,
+    dateOfBirth:Date,
+    role:{default:false,type:Boolean}
   },
   { timestamps: true }
 );
