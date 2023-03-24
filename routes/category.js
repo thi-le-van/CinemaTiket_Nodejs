@@ -1,32 +1,30 @@
 import { Router } from "express";
-import movieModel from "../Model/movie.js";
+import categoryModel from "../Model/category.js";
 
 import dotenv from "dotenv";
 dotenv.config();
-const PAGE_SIZE = 2;
 
-const movieRoute = Router();
-
+const categoryRoute = Router();
 //============POST==============//
-movieRoute.post("/addfilm", async (req, res) => {
-  const { ...movie } = req.body;
-  const isExists = await movieModel.findOne(
-    { nameFilm: movie?.nameFilm },
-    { _id: 0, nameFilm: 1 }
+categoryRoute.post("/addCategory", async (req, res) => {
+  const { ...category } = req.body;
+  const isExists = await categoryModel.findOne(
+    { nameCategory: category?.nameCategory },
+    { _id: 0, nameCategory: 1 }
   );
 
   if (!isExists) {
-    movieModel.create({ ...movie }, (err) => {
+    categoryModel.create({ ...category }, (err) => {
       if (err) res.sendStatus(500);
       return res.send({ type: "success" });
     });
   } else {
-    return res.status(400).send("movie exist");
+    return res.status(400).send("category exist");
   }
 });
 
 //============GET==============//
-movieRoute.get("/getList", async (req, res) => {
+categoryRoute.get("/getList", async (req, res) => {
   try {
     let page = req.query.page;
     if (page) {
@@ -35,7 +33,7 @@ movieRoute.get("/getList", async (req, res) => {
         page = 1;
       }
       let skip = (page - 1) * PAGE_SIZE;
-      movieModel
+      categoryModel
         .find({})
         .skip(skip)
         .limit(PAGE_SIZE)
@@ -43,20 +41,14 @@ movieRoute.get("/getList", async (req, res) => {
           res.json(data);
         });
     } else {
-      const movieList = await movieModel.find(
+      const categoryList = await categoryModel.find(
         {},
         {
-          nameFilm: 1,
+          nameCategory: 1,
           _id: 0,
-          date: 1,
-          time: 1,
-          directors: 1,
-          actors: 1,
-          content: 1,
-          genres: 1,
         }
       );
-      res.send(movieList);
+      res.send(categoryList);
     }
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -64,18 +56,16 @@ movieRoute.get("/getList", async (req, res) => {
 });
 
 //============DELETE==============//
-movieRoute.delete("/delete/:index", async (req, res) => {
+categoryRoute.delete("/delete/:index", async (req, res) => {
   try {
     const { index } = req.params;
-    const result = await movieModel.deleteOne({ index });
+    const result = await categoryModel.deleteOne({ index });
     if (result.deletedCount) {
       return res.send("Success");
     }
-    res.status(400).send("nameFilm does not exist.");
+    res.status(400).send("nameCategory does not exist.");
   } catch (error) {
     res.status(500).send("Internal server error");
   }
 });
-
-//============PUT==============//
-export default movieRoute;
+export default categoryRoute;

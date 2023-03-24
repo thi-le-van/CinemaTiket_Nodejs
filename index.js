@@ -6,9 +6,10 @@ import db from "./db.js";
 import server from "./server.js";
 import {
   movieRoute,
-  personRoute,
   authRoute,
   userRoute,
+  theaterRoute,
+  categoryRoute,
 } from "./routes/index.js";
 
 dotenv.config();
@@ -18,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin:['http://localhost:3001'],
+    origin: ["http://localhost:3001"],
     credentials: true,
   })
 );
@@ -27,6 +28,7 @@ app.use(
 server(app);
 
 app.use("/movie", movieRoute);
-app.use("/person", personRoute);
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
+app.use("/theater", theaterRoute);
+app.use("/category", categoryRoute);
