@@ -1,6 +1,5 @@
 import { Router } from "express";
 import movieModel from "../Model/movie.js";
-
 import dotenv from "dotenv";
 dotenv.config();
 const PAGE_SIZE = 2;
@@ -64,10 +63,10 @@ movieRoute.get("/getList", async (req, res) => {
 });
 
 //============DELETE==============//
-movieRoute.delete("/delete/:index", async (req, res) => {
+movieRoute.delete("/delete/:nameFilm", async (req, res) => {
   try {
-    const { index } = req.params;
-    const result = await movieModel.deleteOne({ index });
+    const { nameFilm } = req.params;
+    const result = await movieModel.deleteOne({ nameFilm });
     if (result.deletedCount) {
       return res.send("Success");
     }
