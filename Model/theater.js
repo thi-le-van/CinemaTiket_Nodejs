@@ -4,7 +4,7 @@ const Theater = mongoose.Schema(
   {
     idArea: String,
     nameTheater: String,
-    location: String,
+    address: String,
   },
   { timestamps: true }
 );

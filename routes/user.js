@@ -21,6 +21,19 @@ userRoute.get("/getList", authorizationMiddleWare, async (req, res) => {
   }
 });
 
+userRoute.get("/getUser/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = await UserModel.findOne(
+      { email: email },
+      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1 }
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
 //============DELETE==============//
 userRoute.delete(
   "/delete/:email",
