@@ -24,41 +24,26 @@ theaterRoute.post("/addTheater", async (req, res) => {
 });
 
 //============GET==============//
-theaterRoute.get("/getList", async (req, res) => {
+theaterRoute.get("/:id", async (req, res) => {
   try {
-    let page = req.query.page;
-    if (page) {
-      page = parseInt(page);
-      if (page < 1) {
-        page = 1;
+    const { id } = req.params;
+    const theaterList = await theaterModel.find(
+      { idArea: id },
+      {
+        idArea: 1,
+        nameTheater: 1,
+        _id: 1,
+        address: 1,
       }
-      let skip = (page - 1) * PAGE_SIZE;
-      theaterModel
-        .find({})
-        .skip(skip)
-        .limit(PAGE_SIZE)
-        .then((data) => {
-          res.json(data);
-        });
-    } else {
-      const theaterList = await theaterModel.find(
-        {},
-        {
-          idArea: 1,
-          nameTheater: 1,
-          _id: 1,
-          address: 1,
-        }
-      );
-      res.send(theaterList);
-    }
+    );
+    res.send(theaterList);
   } catch (error) {
     res.status(500).send("Internal server error");
   }
 });
 
 //============DELETE==============//
-theaterRoute.delete("/delete/:index", async (req, res) => {
+theaterRoute.delete("/:index", async (req, res) => {
   try {
     const { index } = req.params;
     const result = await theaterModel.deleteOne({ index });

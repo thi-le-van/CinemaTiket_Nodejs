@@ -4,3 +4,4 @@ export { default as userRoute } from "./user.js";
 export { default as theaterRoute } from "./theater.js";
 export { default as categoryRoute } from "./category.js";
 export { default as areaRoute } from "./area.js";
+export { default as roomRoute } from "./room.js";

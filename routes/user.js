@@ -13,7 +13,7 @@ userRoute.get("/getList", authorizationMiddleWare, async (req, res) => {
   try {
     const userList = await UserModel.find(
       {},
-      { email: 1, _id: 0, name: 1, phone: 1, dateOfBirth: 1 }
+      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1 }
     );
     res.send(userList);
   } catch (error) {
@@ -21,11 +21,11 @@ userRoute.get("/getList", authorizationMiddleWare, async (req, res) => {
   }
 });
 
-userRoute.get("/getUser/:email", async (req, res) => {
+userRoute.get("/getUser/:id", async (req, res) => {
   try {
-    const { email } = req.params;
+    const { id } = req.params;
     const user = await UserModel.findOne(
-      { email: email },
+      { _id: id },
       { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1 }
     );
     res.send(user);
@@ -35,21 +35,36 @@ userRoute.get("/getUser/:email", async (req, res) => {
 });
 
 //============DELETE==============//
-userRoute.delete(
-  "/delete/:email",
-  authorizationMiddleWare,
-  async (req, res) => {
-    try {
-      const { email } = req.params;
-      const result = await UserModel.deleteOne({ email });
-      if (result.deletedCount) {
-        return res.send("Success");
-      }
-      res.status(400).send("email does not exist.");
-    } catch (error) {
-      res.status(500).send("Internal server error");
+userRoute.delete("/:id", authorizationMiddleWare, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await UserModel.deleteOne({ id });
+    if (result.deletedCount) {
+      return res.send("Success");
     }
+    res.status(400).send("id does not exist.");
+  } catch (error) {
+    res.status(500).send("Internal server error");
   }
-);
+});
 
+//============PUT==============//
+userRoute.put("/:id", async (req, res) => {
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          email: req.body.email,
+          name: req.body.name,
+          phone: req.body.phone,
+          dateOfBirth: req.body.dateOfBirth,
+        },
+      }
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
 export default userRoute;

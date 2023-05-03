@@ -10,6 +10,7 @@ const Movie = mongoose.Schema(
     genres: String,
     content: String,
     actors: String,
+    trailer: String,
   },
   { timestamps: true }
 );

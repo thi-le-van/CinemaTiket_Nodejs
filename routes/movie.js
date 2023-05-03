@@ -46,13 +46,15 @@ movieRoute.get("/getList", async (req, res) => {
         {},
         {
           nameFilm: 1,
-          _id: 0,
+          _id: 1,
           date: 1,
           time: 1,
+          picture: 1,
           directors: 1,
           actors: 1,
           content: 1,
           genres: 1,
+          trailer: 1,
         }
       );
       res.send(movieList);
@@ -62,8 +64,32 @@ movieRoute.get("/getList", async (req, res) => {
   }
 });
 
+movieRoute.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const movie = await movieModel.findOne(
+      { _id: id },
+      {
+        nameFilm: 1,
+        _id: 1,
+        date: 1,
+        time: 1,
+        picture: 1,
+        directors: 1,
+        actors: 1,
+        content: 1,
+        genres: 1,
+        trailer: 1,
+      }
+    );
+    res.send(movie);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
 //============DELETE==============//
-movieRoute.delete("/delete/:nameFilm", async (req, res) => {
+movieRoute.delete("/:nameFilm", async (req, res) => {
   try {
     const { nameFilm } = req.params;
     const result = await movieModel.deleteOne({ nameFilm });
@@ -77,4 +103,27 @@ movieRoute.delete("/delete/:nameFilm", async (req, res) => {
 });
 
 //============PUT==============//
+movieRoute.put("/:id", async (req, res) => {
+  try {
+    const user = await movieModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          nameFilm: req.body.nameFilm,
+          date: req.body.date,
+          time: req.body.time,
+          picture: req.body.picture,
+          directors: req.body.directors,
+          actors: req.body.actors,
+          content: req.body.content,
+          genres: req.body.genres,
+          trailer: req.body.trailer,
+        },
+      }
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
 export default movieRoute;

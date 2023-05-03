@@ -47,7 +47,7 @@ areaRoute.get("/getList", async (req, res) => {
 });
 
 //============DELETE==============//
-areaRoute.delete("/delete/:nameArea", async (req, res) => {
+areaRoute.delete("/:nameArea", async (req, res) => {
   try {
     const { nameArea } = req.params;
     const result = await areaModel.deleteOne({ nameArea });

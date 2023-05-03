@@ -56,7 +56,7 @@ categoryRoute.get("/getList", async (req, res) => {
 });
 
 //============DELETE==============//
-categoryRoute.delete("/delete/:index", async (req, res) => {
+categoryRoute.delete("/:index", async (req, res) => {
   try {
     const { index } = req.params;
     const result = await categoryModel.deleteOne({ index });
