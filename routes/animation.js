@@ -1,30 +1,30 @@
 import { Router } from "express";
-import categoryModel from "../Model/category.js";
-
 import dotenv from "dotenv";
+import animationModel from "./../Model/animation.js";
+
 dotenv.config();
 
-const categoryRoute = Router();
+const animationRoute = Router();
 //============POST==============//
-categoryRoute.post("/addCategory", async (req, res) => {
-  const { ...category } = req.body;
-  const isExists = await categoryModel.findOne(
-    { nameCategory: category?.nameCategory },
-    { _id: 0, nameCategory: 1 }
+animationRoute.post("/addAnimation", async (req, res) => {
+  const { ...animation } = req.body;
+  const isExists = await animationModel.findOne(
+    { nameAnimation: animation?.nameAnimation },
+    { _id: 0, Ameanimation: 1 }
   );
 
   if (!isExists) {
-    categoryModel.create({ ...category }, (err) => {
+    animationModel.create({ ...animation }, (err) => {
       if (err) res.sendStatus(500);
       return res.send({ type: "success" });
     });
   } else {
-    return res.status(400).send("category exist");
+    return res.status(400).send("animation exist");
   }
 });
 
 //============GET==============//
-categoryRoute.get("/getList", async (req, res) => {
+animationRoute.get("/getList", async (req, res) => {
   try {
     let page = req.query.page;
     if (page) {
@@ -33,7 +33,7 @@ categoryRoute.get("/getList", async (req, res) => {
         page = 1;
       }
       let skip = (page - 1) * PAGE_SIZE;
-      categoryModel
+      animationModel
         .find({})
         .skip(skip)
         .limit(PAGE_SIZE)
@@ -41,14 +41,14 @@ categoryRoute.get("/getList", async (req, res) => {
           res.json(data);
         });
     } else {
-      const categoryList = await categoryModel.find(
+      const animationList = await animationModel.find(
         {},
         {
-          nameCategory: 1,
+          nameAnimation: 1,
           _id: 0,
         }
       );
-      res.send(categoryList);
+      res.send(animationList);
     }
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -56,16 +56,16 @@ categoryRoute.get("/getList", async (req, res) => {
 });
 
 //============DELETE==============//
-categoryRoute.delete("/:nameCategory", async (req, res) => {
+animationRoute.delete("/:nameAnimation", async (req, res) => {
   try {
-    const { nameCategory } = req.params;
-    const result = await categoryModel.deleteOne({ nameCategory });
+    const { nameAnimation } = req.params;
+    const result = await animationModel.deleteOne({ nameAnimation });
     if (result.deletedCount) {
       return res.send("Success");
     }
-    res.status(400).send("nameCategory does not exist.");
+    res.status(400).send("nameAnimation does not exist.");
   } catch (error) {
     res.status(500).send("Internal server error");
   }
 });
-export default categoryRoute;
+export default animationRoute;

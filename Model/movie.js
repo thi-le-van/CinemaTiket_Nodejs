@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-
 const Movie = mongoose.Schema(
   {
     nameFilm: String,
     picture: String,
     date: Date,
-    time: Number,
+    time: String,
     directors: String,
-    genres: String,
+    genres: Array,
+    animation: Array,
     content: String,
     actors: String,
     trailer: String,

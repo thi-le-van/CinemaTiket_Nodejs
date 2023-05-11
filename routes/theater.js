@@ -42,6 +42,24 @@ theaterRoute.get("/:id", async (req, res) => {
   }
 });
 
+theaterRoute.get("/getId/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const theater = await theaterModel.find(
+      { _id: id },
+      {
+        idArea: 1,
+        nameTheater: 1,
+        _id: 1,
+        address: 1,
+      }
+    );
+    res.send(theater);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
 //============DELETE==============//
 theaterRoute.delete("/:index", async (req, res) => {
   try {
@@ -51,6 +69,23 @@ theaterRoute.delete("/:index", async (req, res) => {
       return res.send("Success");
     }
     res.status(400).send("nameTheater does not exist.");
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+//============PUT==============//
+theaterRoute.put("/:id", async (req, res) => {
+  try {
+    const theater = await theaterModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          nameTheater: req.body.nameTheater,
+          address: req.body.address,
+        },
+      }
+    );
+    res.send(theater);
   } catch (error) {
     res.status(500).send("Internal server error");
   }
