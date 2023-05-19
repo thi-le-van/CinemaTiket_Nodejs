@@ -44,9 +44,8 @@ theaterRoute.get("/:id", async (req, res) => {
 
 theaterRoute.get("/getId/:id", async (req, res) => {
   try {
-    const { id } = req.params;
     const theater = await theaterModel.find(
-      { _id: id },
+      {},
       {
         idArea: 1,
         nameTheater: 1,

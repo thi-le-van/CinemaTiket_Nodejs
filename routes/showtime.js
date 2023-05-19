@@ -1,6 +1,9 @@
 import { Router } from "express";
 import showtimeModel from "../Model/showtime.js";
+import roomModel from "../Model/room.js";
+import theaterModel from "../Model/theater.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 const PAGE_SIZE = 2;
 
@@ -50,12 +53,8 @@ showtimeRoute.get("/getList", async (req, res) => {
           timeStart: 1,
           _id: 1,
           date: 1,
-          time: 1,
           idFilm: 1,
           idRoom: 1,
-          idArea: 1,
-          idTheater: 1,
-          idAnimation: 1,
         }
       );
       res.send(showtimeList);
@@ -68,22 +67,61 @@ showtimeRoute.get("/getList", async (req, res) => {
 showtimeRoute.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const showtime = await showtimeModel.find(
+    const showTimes = await showtimeModel.find(
       { idFilm: id },
       {
+        _id: 1,
         price: 1,
         timeStart: 1,
-        _id: 1,
         date: 1,
-        time: 1,
         idFilm: 1,
         idRoom: 1,
-        idArea: 1,
-        idTheater: 1,
-        idAnimation: 1,
       }
     );
-    res.send(showtime);
+
+    const idRoom = showTimes.map((showtime) => showtime.idRoom);
+    const rooms = await roomModel.find(
+      { _id: idRoom },
+      {
+        _id: 1,
+        nameRoom: 1,
+        rows: 1,
+        columns: 1,
+        idTheater: 1,
+      }
+    );
+    const idTheater = rooms.map((room) => room.idTheater);
+    const theaters = await theaterModel.find(
+      { _id: idTheater },
+      {
+        idArea: 1,
+        nameTheater: 1,
+        _id: 1,
+        address: 1,
+      }
+    );
+    const finalData = showTimes.map((showTime) => {
+      rooms.some((room) => {
+        if (room._id.toString() === showTime.idRoom) {
+          showTime._doc.idTheater = room.idTheater;
+          showTime._doc.nameRoom = room.nameRoom;
+          return true;
+        }
+        return false;
+      });
+
+      theaters.some((theater) => {
+        if (theater._id.toString() === showTime._doc.idTheater) {
+          showTime._doc.nameTheater = theater.nameTheater;
+          return true;
+        }
+        return false;
+      });
+
+      return showTime;
+    });
+
+    res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");
   }

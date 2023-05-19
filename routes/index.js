@@ -7,3 +7,4 @@ export { default as areaRoute } from "./area.js";
 export { default as roomRoute } from "./room.js";
 export { default as animationRoute } from "./animation.js";
 export { default as showtimeRoute } from "./showtime.js";
+export { default as chairRoute } from "./chair.js";

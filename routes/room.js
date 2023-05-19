@@ -2,7 +2,6 @@ import { Router } from "express";
 import dotenv from "dotenv";
 import roomModel from "./../Model/room.js";
 dotenv.config();
-
 const roomRoute = Router();
 
 //============POST==============//
@@ -29,6 +28,25 @@ roomRoute.get("/:id", async (req, res) => {
     const { id } = req.params;
     const room = await roomModel.find(
       { idTheater: id },
+      {
+        idTheater: 1,
+        nameRoom: 1,
+        _id: 1,
+        columns: 1,
+        rows: 1,
+      }
+    );
+    res.send(room);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
+roomRoute.get("/getId/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const room = await roomModel.find(
+      { _id: id },
       {
         idTheater: 1,
         nameRoom: 1,

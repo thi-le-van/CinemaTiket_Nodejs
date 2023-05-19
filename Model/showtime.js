@@ -4,11 +4,8 @@ const Showtime = mongoose.Schema(
     price: String,
     timeStart: String,
     date: Date,
-    idArea: String,
-    idTheater: String,
     idFilm: String,
     idRoom: String,
-    idAnimation: String,
   },
   { timestamps: true }
 );
