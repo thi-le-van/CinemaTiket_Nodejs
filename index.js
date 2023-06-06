@@ -14,6 +14,7 @@ import {
   roomRoute,
   animationRoute,
   showtimeRoute,
+  ticketRoute,
 } from "./routes/index.js";
 
 dotenv.config();
@@ -40,3 +41,4 @@ app.use("/area", areaRoute);
 app.use("/room", roomRoute);
 app.use("/animation", animationRoute);
 app.use("/showtime", showtimeRoute);
+app.use("/ticket", ticketRoute);

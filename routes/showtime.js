@@ -14,8 +14,8 @@ showtimeRoute.post("/addShowTime", async (req, res) => {
   const { ...showtime } = req.body;
 
   const isExists = await showtimeModel.findOne(
-    { timeStart: showtime?.timeStart, idFilm: showtime?.idFilm },
-    { _id: 0, time: 1 }
+    { timeStart: showtime?.timeStart },
+    { _id: 0, timeStart: 1 }
   );
 
   if (!isExists) {
@@ -109,7 +109,6 @@ showtimeRoute.get("/:id", async (req, res) => {
         }
         return false;
       });
-
       theaters.some((theater) => {
         if (theater._id.toString() === showTime._doc.idTheater) {
           showTime._doc.nameTheater = theater.nameTheater;
@@ -120,7 +119,6 @@ showtimeRoute.get("/:id", async (req, res) => {
 
       return showTime;
     });
-
     res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");
