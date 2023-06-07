@@ -6,14 +6,14 @@ const Ticket = mongoose.Schema(
     idShowTime: String,
     chairs: Array,
     email:String,
-    checkou:{default:false,type:Boolean},
+    checkout:{default:false,type:Boolean},
   //   expireAt: {
   //     type: Date,
-  //     default: Date.now
+  //     default: Date.now,
+  //     expireAfterSeconds: 180
   // },
   },
   { timestamps: true },
 );
-Ticket.index({ expireAt: 1 }, { expireAfterSeconds:3600 });
 const ticketModel = mongoose.model("tickets", Ticket);
 export default ticketModel;
