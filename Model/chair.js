@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const Chair = mongoose.Schema(
   {
-    status:{type:Boolean,default:false},
-    numberChairs: Array
+    numberChair: Array,
+    idRoom:String
   },
   { timestamps: true }
 );

@@ -2,6 +2,7 @@ import { Router } from "express";
 import showtimeModel from "../Model/showtime.js";
 import roomModel from "../Model/room.js";
 import theaterModel from "../Model/theater.js";
+import movieModel from "../Model/movie.js"
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -79,6 +80,15 @@ showtimeRoute.get("/:id", async (req, res) => {
       }
     );
 
+    const movies = await movieModel.find(
+      {_id:id},
+      {
+      nameFilm: 1,
+      _id: 1,
+      date: 1,
+      time: 1,
+      picture: 1,
+    })
     const idRoom = showTimes.map((showtime) => showtime.idRoom);
     const rooms = await roomModel.find(
       { _id: idRoom },
@@ -101,6 +111,14 @@ showtimeRoute.get("/:id", async (req, res) => {
       }
     );
     const finalData = showTimes.map((showTime) => {
+      movies.some((movie)=>{
+        if(movie._id.toString() === showTime.idFilm){
+          showTime._doc.picture = movie.picture;
+          showTime._doc.nameFilm = movie.nameFilm;
+          return true;
+        }
+        return false
+      })
       rooms.some((room) => {
         if (room._id.toString() === showTime.idRoom) {
           showTime._doc.idTheater = room.idTheater;
