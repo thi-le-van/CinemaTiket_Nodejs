@@ -79,15 +79,20 @@ showtimeRoute.get("/:id", async (req, res) => {
         idRoom: 1,
       }
     );
-
     const movies = await movieModel.find(
       {_id:id},
       {
-      nameFilm: 1,
-      _id: 1,
-      date: 1,
-      time: 1,
-      picture: 1,
+        nameFilm: 1,
+        _id: 1,
+        date: 1,
+        time: 1,
+        picture: 1,
+        animation: 1,
+        directors: 1,
+        actors: 1,
+        content: 1,
+        genres: 1,
+        trailer: 1,
     })
     const idRoom = showTimes.map((showtime) => showtime.idRoom);
     const rooms = await roomModel.find(
@@ -115,6 +120,8 @@ showtimeRoute.get("/:id", async (req, res) => {
         if(movie._id.toString() === showTime.idFilm){
           showTime._doc.picture = movie.picture;
           showTime._doc.nameFilm = movie.nameFilm;
+          showTime._doc.date = movie.date;
+          showTime._doc.time = movie.time
           return true;
         }
         return false
@@ -134,7 +141,6 @@ showtimeRoute.get("/:id", async (req, res) => {
         }
         return false;
       });
-
       return showTime;
     });
     res.send(finalData);
@@ -143,6 +149,91 @@ showtimeRoute.get("/:id", async (req, res) => {
   }
 });
 
+
+showtimeRoute.get("/showtime/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const showTimes = await showtimeModel.find(
+      { _id: id },
+      {
+        _id: 1,
+        price: 1,
+        timeStart: 1,
+        date: 1,
+        idFilm: 1,
+        idRoom: 1,
+      }
+    );
+    const idMovie = showTimes.map((showtime) => showtime.idFilm);
+    const movies = await movieModel.find(
+      {_id:idMovie},
+      {
+        nameFilm: 1,
+        _id: 1,
+        date: 1,
+        time: 1,
+        picture: 1,
+        animation: 1,
+        directors: 1,
+        actors: 1,
+        content: 1,
+        genres: 1,
+        trailer: 1,
+    })
+    const idRoom = showTimes.map((showtime) => showtime.idRoom);
+    const rooms = await roomModel.find(
+      { _id: idRoom },
+      {
+        _id: 1,
+        nameRoom: 1,
+        rows: 1,
+        columns: 1,
+        idTheater: 1,
+      }
+    );
+    const idTheater = rooms.map((room) => room.idTheater);
+    const theaters = await theaterModel.find(
+      { _id: idTheater },
+      {
+        idArea: 1,
+        nameTheater: 1,
+        _id: 1,
+        address: 1,
+      }
+    );
+    const finalData = showTimes.map((showTime) => {
+      movies.some((movie)=>{
+        if(movie._id.toString() === showTime.idFilm){
+          showTime._doc.picture = movie.picture;
+          showTime._doc.nameFilm = movie.nameFilm;
+          showTime._doc.date = movie.date;
+          showTime._doc.time = movie.time
+          return true;
+        }
+        return false
+      })
+      rooms.some((room) => {
+        if (room._id.toString() === showTime.idRoom) {
+          showTime._doc.idTheater = room.idTheater;
+          showTime._doc.nameRoom = room.nameRoom;
+          return true;
+        }
+        return false;
+      });
+      theaters.some((theater) => {
+        if (theater._id.toString() === showTime._doc.idTheater) {
+          showTime._doc.nameTheater = theater.nameTheater;
+          return true;
+        }
+        return false;
+      });
+      return showTime;
+    });
+    res.send(finalData);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
 //============DELETE==============//
 showtimeRoute.delete("/:id", async (req, res) => {
   try {

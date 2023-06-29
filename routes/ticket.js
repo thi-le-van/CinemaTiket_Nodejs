@@ -142,5 +142,23 @@ ticketRoute.get("/:email", async (req, res) => {
 //============DELETE==============//
 
 //============PUT==============//
-
+ticketRoute.put("/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    const ticket = await ticketModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          checkout: true,
+          "expireAt" : new Date().setFullYear(2030),
+        },
+      }
+    );
+    
+    res.send(ticket);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error");
+  }
+});
 export default ticketRoute;

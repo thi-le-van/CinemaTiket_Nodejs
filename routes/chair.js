@@ -54,4 +54,24 @@ chairRoute.get("/:idRoom", async (req, res) => {
 //     res.status(500).send("Internal server error");
 //   }
 // });
+//============PUT==============//
+chairRoute.put("/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    const chair = await chairModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          checkout: true,
+          "expireAt" : new Date().setFullYear(2030),
+        },
+      }
+    );
+    
+    res.send(chair);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error");
+  }
+});
 export default chairRoute;

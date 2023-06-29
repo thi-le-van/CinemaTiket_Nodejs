@@ -7,11 +7,11 @@ const Ticket = mongoose.Schema(
     chairs: Array,
     email:String,
     checkout:{default:false,type:Boolean},
-  //   expireAt: {
-  //     type: Date,
-  //     default: Date.now,
-  //     expireAfterSeconds: 180
-  // },
+    expireAt: {
+      type: Date,
+      default: Date.now,
+      expires: 180
+  },
   },
   { timestamps: true },
 );

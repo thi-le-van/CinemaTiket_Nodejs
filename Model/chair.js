@@ -3,7 +3,13 @@ import mongoose from "mongoose";
 const Chair = mongoose.Schema(
   {
     numberChair: Array,
-    idRoom:String
+    idRoom:String,
+    checkout:{default:false,type:Boolean},
+    expireAt: {
+      type: Date,
+      default: Date.now,
+      expires: 180
+  },
   },
   { timestamps: true }
 );
