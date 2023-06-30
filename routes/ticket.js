@@ -144,7 +144,6 @@ ticketRoute.get("/:email", async (req, res) => {
 //============PUT==============//
 ticketRoute.put("/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     const ticket = await ticketModel.findOneAndUpdate(
       { _id: req.params.id },
       {
