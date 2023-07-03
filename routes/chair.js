@@ -57,7 +57,6 @@ chairRoute.get("/:idRoom", async (req, res) => {
 //============PUT==============//
 chairRoute.put("/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     const chair = await chairModel.findOneAndUpdate(
       { _id: req.params.id },
       {
@@ -70,7 +69,6 @@ chairRoute.put("/:id", async (req, res) => {
     
     res.send(chair);
   } catch (error) {
-    console.log(error);
     res.status(500).send("Internal server error");
   }
 });

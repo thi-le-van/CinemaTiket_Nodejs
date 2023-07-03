@@ -56,7 +56,6 @@ authRoute.post("/login", async (req, res) => {
             { email: userMatch.email, _id: userMatch._id },
             process.env.TOKEN_REFRESH_KEY
           );
-          console.log("hello");
           await TokenModel.create({ token: refreshToken }, (err) => {
             if (err) console.log("Save token field");
             else {
@@ -68,14 +67,12 @@ authRoute.post("/login", async (req, res) => {
           delete newData.createdAt;
           delete newData.updatedAt;
           delete newData._id;
-          console.log("success");
           return res.status(200).json({
             type: "success",
             user: { ...newData, accessToken },
             refreshToken,
           });
         } else {
-          console.log("fail");
           return res
             .status(400)
             .send({ type: "error", message: "Email or password incorrect." });
@@ -150,7 +147,6 @@ authRoute.get("/refresh-token", async (req, res) => {
     );
   } catch (error) {
     console.log(error);
-    console.log("something wrong");
   }
 });
 

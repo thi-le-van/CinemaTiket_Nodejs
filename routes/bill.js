@@ -144,7 +144,6 @@ billRoute.get("/:id", async (req, res) => {
       });
       return bill;
     });
-    console.log(finalData);
     res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");

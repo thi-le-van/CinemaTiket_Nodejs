@@ -16,7 +16,7 @@ import {
   showtimeRoute,
   ticketRoute,
   billRoute,
-  chairRoute
+  chairRoute,
 } from "./routes/index.js";
 
 dotenv.config();
@@ -24,6 +24,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(
   cors({
     origin: ["http://localhost:3001"],
