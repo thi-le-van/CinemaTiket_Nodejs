@@ -6,6 +6,7 @@ import showtimeModel from "../Model/showtime.js";
 import movieModel from "./../Model/movie.js";
 import roomModel from "./../Model/room.js";
 import theaterModel from "./../Model/theater.js";
+import chairModel from "./../Model/chair.js";
 dotenv.config();
 
 const ticketRoute = Router();
@@ -41,6 +42,15 @@ ticketRoute.get("/:email", async (req, res) => {
         checkout: 1,
       }
     );
+    const chair = tickets.map((e) => e.chair);
+    // const chairs = await chairModel.find(
+    //   {
+    //     idRoom: idRoom,
+    //   },
+    //   { idRoom: 1, numberChair: 1, _id: 1 }
+    // );
+    // console.log({ chairs });
+
     const idShowTime = tickets.map((showTime) => showTime.idShowTime);
     const showTimes = await showtimeModel.find(
       {
@@ -73,6 +83,7 @@ ticketRoute.get("/:email", async (req, res) => {
       }
     );
     const idRoom = showTimes.map((showTime) => showTime.idRoom);
+
     const rooms = await roomModel.find(
       { _id: idRoom },
       {
@@ -132,6 +143,7 @@ ticketRoute.get("/:email", async (req, res) => {
       });
       return ticket;
     });
+
     res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -139,7 +151,19 @@ ticketRoute.get("/:email", async (req, res) => {
 });
 
 //============DELETE==============//
-
+ticketRoute.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log({ id });
+    const result = await ticketModel.deleteOne({ id });
+    if (result.deletedCount) {
+      return res.send("Success");
+    }
+    res.status(400).send("Ticket does not exist.");
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
 //============PUT==============//
 ticketRoute.put("/:id", async (req, res) => {
   try {

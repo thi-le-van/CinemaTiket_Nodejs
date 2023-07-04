@@ -5,6 +5,7 @@ const Ticket = mongoose.Schema(
     price: String,
     idShowTime: String,
     chairs: Array,
+    idChair: String,
     email: String,
     date: Date,
     checkout: { default: false, type: Boolean },

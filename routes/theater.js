@@ -60,10 +60,10 @@ theaterRoute.get("/getId/:id", async (req, res) => {
 });
 
 //============DELETE==============//
-theaterRoute.delete("/:index", async (req, res) => {
+theaterRoute.delete("/:nameTheater", async (req, res) => {
   try {
-    const { index } = req.params;
-    const result = await theaterModel.deleteOne({ index });
+    const { nameTheater } = req.params;
+    const result = await theaterModel.deleteOne({ nameTheater });
     if (result.deletedCount) {
       return res.send("Success");
     }
