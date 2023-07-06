@@ -14,8 +14,12 @@ const showtimeRoute = Router();
 showtimeRoute.post("/addShowTime", async (req, res) => {
   const { ...showtime } = req.body;
   const isExists = await showtimeModel.findOne(
-    { idRoom: showtime?.idRoom, idFilm: showtime?.idFilm },
-    { _id: 0, idRoom: 1, idFilm: 1 }
+    {
+      idRoom: showtime?.idRoom,
+      idFilm: showtime?.idFilm,
+      timeStart: showtime?.timeStart,
+    },
+    { _id: 0, idRoom: 1, idFilm: 1, timeStart: 1 }
   );
 
   if (!isExists) {
@@ -32,6 +36,7 @@ showtimeRoute.post("/addShowTime", async (req, res) => {
 showtimeRoute.get("/getList", async (req, res) => {
   try {
     let page = req.query.page;
+
     if (page) {
       page = parseInt(page);
       if (page < 1) {

@@ -10,3 +10,4 @@ export { default as showtimeRoute } from "./showtime.js";
 export { default as chairRoute } from "./chair.js";
 export { default as ticketRoute } from "./ticket.js";
 export { default as billRoute } from "./bill.js";
+export { default as detailticketRoute } from "./detailticket.js";

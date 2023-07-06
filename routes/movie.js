@@ -2,7 +2,6 @@ import { Router } from "express";
 import movieModel from "../Model/movie.js";
 import dotenv from "dotenv";
 dotenv.config();
-const PAGE_SIZE = 2;
 
 const movieRoute = Router();
 
@@ -27,39 +26,23 @@ movieRoute.post("/addfilm", async (req, res) => {
 //============GET==============//
 movieRoute.get("/getList", async (req, res) => {
   try {
-    let page = req.query.page;
-    if (page) {
-      page = parseInt(page);
-      if (page < 1) {
-        page = 1;
+    const movieList = await movieModel.find(
+      {},
+      {
+        nameFilm: 1,
+        _id: 1,
+        date: 1,
+        time: 1,
+        picture: 1,
+        animation: 1,
+        directors: 1,
+        actors: 1,
+        content: 1,
+        genres: 1,
+        trailer: 1,
       }
-      let skip = (page - 1) * PAGE_SIZE;
-      movieModel
-        .find({})
-        .skip(skip)
-        .limit(PAGE_SIZE)
-        .then((data) => {
-          res.json(data);
-        });
-    } else {
-      const movieList = await movieModel.find(
-        {},
-        {
-          nameFilm: 1,
-          _id: 1,
-          date: 1,
-          time: 1,
-          picture: 1,
-          animation: 1,
-          directors: 1,
-          actors: 1,
-          content: 1,
-          genres: 1,
-          trailer: 1,
-        }
-      );
-      res.send(movieList);
-    }
+    );
+    res.send(movieList);
   } catch (error) {
     res.status(500).send("Internal server error");
   }

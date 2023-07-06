@@ -6,6 +6,7 @@ const Showtime = mongoose.Schema(
     date: Date,
     idFilm: String,
     idRoom: String,
+    priceVip: String,
   },
   { timestamps: true }
 );

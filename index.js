@@ -16,6 +16,7 @@ import {
   showtimeRoute,
   ticketRoute,
   billRoute,
+  detailticketRoute,
   chairRoute,
 } from "./routes/index.js";
 
@@ -47,3 +48,4 @@ app.use("/showtime", showtimeRoute);
 app.use("/ticket", ticketRoute);
 app.use("/bill", billRoute);
 app.use("/chair", chairRoute);
+app.use("/detailticket", detailticketRoute);
