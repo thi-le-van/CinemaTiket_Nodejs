@@ -35,6 +35,7 @@ detailTicketRoute.get("/:id", async (req, res) => {
         email: 1,
         date: 1,
         detail: 1,
+        checkout: 1,
       }
     );
     res.send(detailTicket);
@@ -52,7 +53,6 @@ detailTicketRoute.put("/:id", async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
-          idTicket: req.body.idTicket,
           checkout: true,
           expireAt: new Date().setFullYear(2030),
         },

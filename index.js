@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import db from "./db.js";
 import server from "./server.js";
+
 import {
   movieRoute,
   authRoute,

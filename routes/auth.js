@@ -36,9 +36,6 @@ authRoute.post("/login", async (req, res) => {
   try {
     const { ...user } = req.body;
     const userMatch = await UserModel.findOne({ email: user.email });
-    if (user.email === "admin@admin.com" && user.password === "admin") {
-      user.role === true;
-    }
     bcrypt.compare(
       user.password,
       userMatch?.password || "",
