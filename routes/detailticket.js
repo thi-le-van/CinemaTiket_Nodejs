@@ -49,10 +49,12 @@ detailTicketRoute.get("/:id", async (req, res) => {
 //============PUT==============//
 detailTicketRoute.put("/:id", async (req, res) => {
   try {
+    console.log(req.body.idTicket);
     const ticket = await detailTicketModel.findOneAndUpdate(
       { _id: req.params.id },
       {
         $set: {
+          idTicket: req.body.idTicket,
           checkout: true,
           expireAt: new Date().setFullYear(2030),
         },
