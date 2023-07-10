@@ -84,6 +84,7 @@ authRoute.post("/login", async (req, res) => {
 authRoute.post("/logout", async (req, res) => {
   try {
     let { token } = req.cookies;
+    console.log(token);
     token = token?.split(" ")[1];
     const result = await TokenModel.deleteOne({ token });
 

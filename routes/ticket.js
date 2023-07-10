@@ -154,7 +154,6 @@ ticketRoute.get("/:email", async (req, res) => {
 ticketRoute.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    console.log({ id });
     const result = await ticketModel.deleteOne({ id });
     if (result.deletedCount) {
       return res.send("Success");

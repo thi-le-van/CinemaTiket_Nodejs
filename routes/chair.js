@@ -14,10 +14,10 @@ chairRoute.post("/addChair", async (req, res) => {
   // );
 
   // if (!isExists) {
-    chairModel.create({ ...chair }, (err) => {
-      if (err) res.sendStatus(500);
-      return res.send({ type: "success" });
-    });
+  chairModel.create({ ...chair }, (err) => {
+    if (err) res.sendStatus(500);
+    return res.send({ type: "success" });
+  });
   // } else {
   //   return res.status(400).send("room exist");
   // }
@@ -42,18 +42,18 @@ chairRoute.get("/:idRoom", async (req, res) => {
 });
 
 //============DELETE==============//
-// chairRoute.delete("/:nameRoom", async (req, res) => {
-//   try {
-//     const { nameRoom } = req.params;
-//     const result = await chairModel.deleteOne({ nameRoom });
-//     if (result.deletedCount) {
-//       return res.send("Success");
-//     }
-//     res.status(400).send("Room does not exist.");
-//   } catch (error) {
-//     res.status(500).send("Internal server error");
-//   }
-// });
+chairRoute.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await chairModel.deleteOne({ id });
+    if (result.deletedCount) {
+      return res.send("Success");
+    }
+    res.status(400).send("Chair does not exist.");
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
 //============PUT==============//
 chairRoute.put("/:id", async (req, res) => {
   try {
@@ -62,11 +62,11 @@ chairRoute.put("/:id", async (req, res) => {
       {
         $set: {
           checkout: true,
-          "expireAt" : new Date().setFullYear(2030),
+          expireAt: new Date().setFullYear(2030),
         },
       }
     );
-    
+
     res.send(chair);
   } catch (error) {
     res.status(500).send("Internal server error");

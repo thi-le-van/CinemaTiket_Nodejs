@@ -166,6 +166,7 @@ showtimeRoute.get("/showtime/:id", async (req, res) => {
         date: 1,
         idFilm: 1,
         idRoom: 1,
+        priceVip: 1,
       }
     );
     const idMovie = showTimes.map((showtime) => showtime.idFilm);
