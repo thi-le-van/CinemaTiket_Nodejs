@@ -102,6 +102,7 @@ movieRoute.put("/:id", async (req, res) => {
           actors: req.body.actors,
           content: req.body.content,
           genres: req.body.genres,
+          animation: req.body.animation,
           trailer: req.body.trailer,
         },
       }
