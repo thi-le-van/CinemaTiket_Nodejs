@@ -83,6 +83,7 @@ showtimeRoute.get("/:id", async (req, res) => {
         idFilm: 1,
         idRoom: 1,
         animation: 1,
+        date: 1,
       }
     );
     const movies = await movieModel.find(
@@ -127,7 +128,7 @@ showtimeRoute.get("/:id", async (req, res) => {
         if (movie._id.toString() === showTime.idFilm) {
           showTime._doc.picture = movie.picture;
           showTime._doc.nameFilm = movie.nameFilm;
-          showTime._doc.date = movie.date;
+          showTime._doc.dateTime = movie.date;
           showTime._doc.time = movie.time;
           return true;
         }
