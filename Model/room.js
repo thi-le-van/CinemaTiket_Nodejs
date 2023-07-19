@@ -6,6 +6,8 @@ const Room = mongoose.Schema(
     rows: String,
     columns: String,
     idTheater: String,
+    left: String,
+    right: String,
   },
   { timestamps: true }
 );

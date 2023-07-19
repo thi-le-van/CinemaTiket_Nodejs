@@ -34,6 +34,8 @@ roomRoute.get("/:id", async (req, res) => {
         _id: 1,
         columns: 1,
         rows: 1,
+        left: 1,
+        right: 1,
       }
     );
     res.send(room);
@@ -53,6 +55,8 @@ roomRoute.get("/getId/:id", async (req, res) => {
         _id: 1,
         columns: 1,
         rows: 1,
+        left: 1,
+        right: 1,
       }
     );
     res.send(room);
