@@ -13,7 +13,7 @@ userRoute.get("/getList", authorizationMiddleWare, async (req, res) => {
   try {
     const userList = await UserModel.find(
       {},
-      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1 }
+      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1, role: 1 }
     );
     res.send(userList);
   } catch (error) {
