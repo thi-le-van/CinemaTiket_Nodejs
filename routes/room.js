@@ -47,6 +47,7 @@ roomRoute.get("/:id", async (req, res) => {
 roomRoute.get("/getId/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const room = await roomModel.find(
       { _id: id },
       {

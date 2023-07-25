@@ -11,3 +11,4 @@ export { default as chairRoute } from "./chair.js";
 export { default as ticketRoute } from "./ticket.js";
 export { default as detailticketRoute } from "./detailticket.js";
 export { default as paymentRoute } from "./payment.js";
+export { default as bangoiRoute } from "./bangoi.js";

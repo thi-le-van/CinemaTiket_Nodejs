@@ -1,15 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const user = mongoose.Schema(
   {
     name: String,
-    email:String,
+    email: String,
     password: String,
-    phone:String,
-    dateOfBirth:Date,
-    role:{default:false,type:Boolean}
+    phone: String,
+    dateOfBirth: Date,
+    role: { default: false, type: Boolean },
+    disable: { default: false, type: Boolean },
   },
   { timestamps: true }
 );
 
-export default mongoose.model('users', user);
+export default mongoose.model("users", user);

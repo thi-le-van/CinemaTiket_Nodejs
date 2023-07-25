@@ -27,6 +27,7 @@ chairRoute.post("/addChair", async (req, res) => {
 chairRoute.get("/:idRoom", async (req, res) => {
   try {
     const { idRoom } = req.params;
+    console.log({ idRoom });
     const chair = await chairModel.find(
       { idRoom: idRoom },
       {

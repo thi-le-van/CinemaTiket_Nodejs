@@ -13,7 +13,15 @@ userRoute.get("/getList", authorizationMiddleWare, async (req, res) => {
   try {
     const userList = await UserModel.find(
       {},
-      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1, role: 1 }
+      {
+        email: 1,
+        _id: 1,
+        name: 1,
+        phone: 1,
+        dateOfBirth: 1,
+        role: 1,
+        disable: 1,
+      }
     );
     res.send(userList);
   } catch (error) {
@@ -26,7 +34,15 @@ userRoute.get("/getUser/:id", async (req, res) => {
     const { id } = req.params;
     const user = await UserModel.findOne(
       { _id: id },
-      { email: 1, _id: 1, name: 1, phone: 1, dateOfBirth: 1 }
+      {
+        email: 1,
+        _id: 1,
+        name: 1,
+        phone: 1,
+        dateOfBirth: 1,
+        role: 1,
+        disable: 1,
+      }
     );
     res.send(user);
   } catch (error) {
@@ -59,6 +75,36 @@ userRoute.put("/:id", async (req, res) => {
           name: req.body.name,
           phone: req.body.phone,
           dateOfBirth: req.body.dateOfBirth,
+        },
+      }
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+userRoute.put("/block/:id", async (req, res) => {
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          disable: true,
+        },
+      }
+    );
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+userRoute.put("/open/:id", async (req, res) => {
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          disable: false,
         },
       }
     );

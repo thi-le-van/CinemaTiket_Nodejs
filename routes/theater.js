@@ -73,10 +73,10 @@ theaterRoute.delete("/:nameTheater", async (req, res) => {
   }
 });
 //============PUT==============//
-theaterRoute.put("/:id", async (req, res) => {
+theaterRoute.put("/:nameTheater", async (req, res) => {
   try {
     const theater = await theaterModel.findOneAndUpdate(
-      { _id: req.params.id },
+      { _nameTheater: req.params },
       {
         $set: {
           nameTheater: req.body.nameTheater,

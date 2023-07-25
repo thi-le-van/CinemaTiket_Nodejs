@@ -61,6 +61,7 @@ showtimeRoute.get("/getList", async (req, res) => {
           idFilm: 1,
           idRoom: 1,
           animation: 1,
+          priceVip: 1,
         }
       );
       res.send(showtimeList);
@@ -84,6 +85,7 @@ showtimeRoute.get("/:id", async (req, res) => {
         idRoom: 1,
         animation: 1,
         date: 1,
+        priceVip: 1,
       }
     );
     const movies = await movieModel.find(
