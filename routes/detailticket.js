@@ -187,6 +187,7 @@ detailTicketRoute.delete("/:id", async (req, res) => {
 //============PUT==============//
 detailTicketRoute.put("/:id", async (req, res) => {
   try {
+    console.log(req.params.id);
     const ticket = await detailTicketModel.findOneAndUpdate(
       { _id: req.params.id },
       {

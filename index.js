@@ -19,6 +19,7 @@ import {
   ticketRoute,
   detailticketRoute,
   chairRoute,
+  paymentRoute,
 } from "./routes/index.js";
 
 dotenv.config();
@@ -48,3 +49,4 @@ app.use("/showtime", showtimeRoute);
 app.use("/ticket", ticketRoute);
 app.use("/chair", chairRoute);
 app.use("/detailticket", detailticketRoute);
+app.use("/payment", paymentRoute);
