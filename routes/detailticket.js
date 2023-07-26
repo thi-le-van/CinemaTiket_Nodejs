@@ -172,7 +172,7 @@ detailTicketRoute.get("/getDetail/:id", async (req, res) => {
   }
 });
 //============DELETE==============//
-detailTicketRoute.delete("/:id", async (req, res) => {
+detailTicketRoute.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await detailTicketModel.deleteOne({ id });

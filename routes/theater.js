@@ -2,6 +2,7 @@ import { Router } from "express";
 import theaterModel from "../Model/theater.js";
 
 import dotenv from "dotenv";
+import areaModel from "../Model/area.js";
 dotenv.config();
 
 const theaterRoute = Router();
@@ -27,7 +28,7 @@ theaterRoute.post("/addTheater", async (req, res) => {
 theaterRoute.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const theaterList = await theaterModel.find(
+    const theaters = await theaterModel.find(
       { idArea: id },
       {
         idArea: 1,
@@ -36,7 +37,28 @@ theaterRoute.get("/:id", async (req, res) => {
         address: 1,
       }
     );
-    res.send(theaterList);
+    const idArea = theaters.map((theater) => theater.idArea);
+    const areas = await areaModel.find(
+      {
+        _id: idArea,
+      },
+      {
+        _id: 1,
+        nameArea: 1,
+      }
+    );
+    const finalData = theaters.map((theater) => {
+      areas.some((area) => {
+        if (area._id.toString() === theater.idArea) {
+          theater._doc.nameArea = area.nameArea;
+          return true;
+        }
+        return false;
+      });
+
+      return theater;
+    });
+    res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");
   }
@@ -53,7 +75,28 @@ theaterRoute.get("/getId/:id", async (req, res) => {
         address: 1,
       }
     );
-    res.send(theater);
+    const idArea = theaters.map((theater) => theater.idArea);
+    const areas = await areaModel.find(
+      {
+        _id: idArea,
+      },
+      {
+        _id: 1,
+        nameArea: 1,
+      }
+    );
+    const finalData = theaters.map((theater) => {
+      areas.some((area) => {
+        if (area._id.toString() === theater.idArea) {
+          theater._doc.nameArea = area.nameArea;
+          return true;
+        }
+        return false;
+      });
+
+      return theater;
+    });
+    res.send(finalData);
   } catch (error) {
     res.status(500).send("Internal server error");
   }

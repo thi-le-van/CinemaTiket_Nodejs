@@ -34,6 +34,7 @@ chairRoute.get("/:idRoom", async (req, res) => {
         idRoom: 1,
         numberChair: 1,
         _id: 1,
+        checkout: 1,
       }
     );
     res.send(chair);
@@ -43,7 +44,7 @@ chairRoute.get("/:idRoom", async (req, res) => {
 });
 
 //============DELETE==============//
-chairRoute.delete("/:id", async (req, res) => {
+chairRoute.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await chairModel.deleteOne({ id });

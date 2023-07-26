@@ -151,7 +151,7 @@ ticketRoute.get("/:email", async (req, res) => {
 });
 
 //============DELETE==============//
-ticketRoute.delete("/:id", async (req, res) => {
+ticketRoute.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await ticketModel.deleteOne({ id });

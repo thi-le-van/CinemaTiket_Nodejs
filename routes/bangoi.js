@@ -27,11 +27,11 @@ bangoiRoute.post("/addBaNgoi", async (req, res) => {
 });
 
 //============GET==============//
-bangoiRoute.get("/:timeStart", async (req, res) => {
+bangoiRoute.get("/:timeStart&:idRoom&:idFilm", async (req, res) => {
   try {
-    const { timeStart } = req.params;
+    const { timeStart, idRoom, idFilm } = req.params;
     const bangois = await bangoiModel.find(
-      { timeStart: timeStart },
+      { timeStart: timeStart, idRoom: idRoom, idFilm: idFilm },
       {
         _id: 1,
         idRoom: 1,
@@ -39,9 +39,9 @@ bangoiRoute.get("/:timeStart", async (req, res) => {
         timeStart: 1,
       }
     );
-    const idRoom = bangois.map((bangoi) => bangoi.idRoom);
+    const idRooms = bangois.map((bangoi) => bangoi.idRoom);
     const rooms = await roomModel.find(
-      { _id: idRoom },
+      { _id: idRooms },
       {
         _id: 1,
         nameRoom: 1,
