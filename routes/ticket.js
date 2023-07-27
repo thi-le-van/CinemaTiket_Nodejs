@@ -7,6 +7,7 @@ import movieModel from "./../Model/movie.js";
 import roomModel from "./../Model/room.js";
 import theaterModel from "./../Model/theater.js";
 import chairModel from "./../Model/chair.js";
+import sendEmail from "../Services/EmailServices.js";
 dotenv.config();
 
 const ticketRoute = Router();
@@ -166,8 +167,10 @@ ticketRoute.delete("/delete/:id", async (req, res) => {
 //============PUT==============//
 ticketRoute.put("/:id", async (req, res) => {
   try {
+    const { id, ve } = req.body;
+    console.log(ve);
     const ticket = await ticketModel.findOneAndUpdate(
-      { _id: req.params.id },
+      { _id: id },
       {
         $set: {
           checkout: true,
@@ -175,7 +178,7 @@ ticketRoute.put("/:id", async (req, res) => {
         },
       }
     );
-
+    await sendEmail(ve.user);
     res.send(ticket);
   } catch (error) {
     res.status(500).send("Internal server error");
