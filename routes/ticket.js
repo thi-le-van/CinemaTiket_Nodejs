@@ -168,7 +168,7 @@ ticketRoute.delete("/delete/:id", async (req, res) => {
 ticketRoute.put("/:id", async (req, res) => {
   try {
     const { id, ve } = req.body;
-    console.log(ve);
+    console.log(ve.ghe);
     const ticket = await ticketModel.findOneAndUpdate(
       { _id: id },
       {
@@ -178,7 +178,7 @@ ticketRoute.put("/:id", async (req, res) => {
         },
       }
     );
-    await sendEmail(ve.user);
+    await sendEmail(ve);
     res.send(ticket);
   } catch (error) {
     res.status(500).send("Internal server error");

@@ -217,7 +217,6 @@ showtimeRoute.get("/showtime/:id", async (req, res) => {
         if (movie._id.toString() === showTime.idFilm) {
           showTime._doc.picture = movie.picture;
           showTime._doc.nameFilm = movie.nameFilm;
-          showTime._doc.date = movie.date;
           showTime._doc.time = movie.time;
           return true;
         }
