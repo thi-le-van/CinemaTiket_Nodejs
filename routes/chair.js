@@ -43,6 +43,23 @@ chairRoute.get("/:idRoom", async (req, res) => {
   }
 });
 
+chairRoute.get("/get/getList", async (req, res) => {
+  try {
+    const chair = await chairModel.find(
+      {},
+      {
+        idRoom: 1,
+        numberChair: 1,
+        _id: 1,
+        checkout: 1,
+      }
+    );
+    res.send(chair);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
 //============DELETE==============//
 chairRoute.delete("/delete/:id", async (req, res) => {
   try {
@@ -64,6 +81,7 @@ chairRoute.put("/:id", async (req, res) => {
       {
         $set: {
           checkout: true,
+          idTicket: req.body.idTicket,
           expireAt: new Date().setFullYear(2030),
         },
       }

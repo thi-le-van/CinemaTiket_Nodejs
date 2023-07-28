@@ -151,11 +151,32 @@ ticketRoute.get("/:email", async (req, res) => {
   }
 });
 
-//============DELETE==============//
-ticketRoute.delete("/delete/:id", async (req, res) => {
+ticketRoute.get("/get/getList", async (req, res) => {
   try {
-    const { id } = req.params;
-    const result = await ticketModel.deleteOne({ id });
+    const ticket = await ticketModel.find(
+      {},
+      {
+        _id: 1,
+        price: 1,
+        idShowTime: 1,
+        chairs: 1,
+        idChair: 1,
+        email: 1,
+        date: 1,
+        checkout: 1,
+      }
+    );
+    res.send(ticket);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
+//============DELETE==============//
+ticketRoute.delete("/delete/:idTicket", async (req, res) => {
+  try {
+    const { idTicket } = req.params;
+    const result = await ticketModel.deleteOne({ idTicket });
     if (result.deletedCount) {
       return res.send("Success");
     }
@@ -168,7 +189,6 @@ ticketRoute.delete("/delete/:id", async (req, res) => {
 ticketRoute.put("/:id", async (req, res) => {
   try {
     const { id, ve } = req.body;
-    console.log(ve.ghe);
     const ticket = await ticketModel.findOneAndUpdate(
       { _id: id },
       {

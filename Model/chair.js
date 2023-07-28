@@ -4,6 +4,7 @@ const Chair = mongoose.Schema(
   {
     numberChair: Array,
     idRoom: String,
+    idTicket: String,
     checkout: { default: false, type: Boolean },
     expireAt: {
       type: Date,
